@@ -2,95 +2,93 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* stockPICKER - Finance Design System */
+/* Dark theme with professional finance aesthetics */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Deep dark finance theme */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 222 47% 10%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Amber/Gold for brand accent */
+    --primary: 38 92% 50%;
+    --primary-foreground: 222 47% 6%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Slate blue */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 55%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 217 33% 20%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 84.2% 60.2%;
+    /* Status colors */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Finance-specific colors */
+    --profit: 142 76% 45%;
+    --profit-foreground: 142 76% 95%;
+    --profit-muted: 142 50% 15%;
+    
+    --loss: 0 84% 55%;
+    --loss-foreground: 0 84% 95%;
+    --loss-muted: 0 50% 15%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 38 92% 10%;
+    --warning-muted: 38 50% 15%;
 
-    --radius: 0.5rem;
+    --open: 217 91% 60%;
+    --open-foreground: 217 91% 98%;
+    --open-muted: 217 50% 15%;
 
-    --sidebar-background: 0 0% 98%;
+    --border: 217 33% 18%;
+    --input: 217 33% 15%;
+    --ring: 38 92% 50%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --radius: 0.75rem;
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Gradients */
+    --gradient-brand: linear-gradient(135deg, hsl(38 92% 50%), hsl(28 92% 45%));
+    --gradient-card: linear-gradient(145deg, hsl(222 47% 10%), hsl(222 47% 7%));
+    --gradient-glass: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    --gradient-profit: linear-gradient(135deg, hsl(142 76% 45%), hsl(152 76% 40%));
+    --gradient-loss: linear-gradient(135deg, hsl(0 84% 55%), hsl(10 84% 50%));
+    --gradient-hero: linear-gradient(135deg, hsl(222 47% 8%) 0%, hsl(222 47% 12%) 50%, hsl(222 47% 6%) 100%);
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    --shadow-glow-brand: 0 0 20px rgba(245, 158, 11, 0.3);
+    --shadow-glow-profit: 0 0 15px rgba(34, 197, 94, 0.3);
+    --shadow-glow-loss: 0 0 15px rgba(239, 68, 68, 0.3);
 
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar */
+    --sidebar-background: 222 47% 7%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 38 92% 50%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 15%;
+    --sidebar-ring: 38 92% 50%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Already dark by default */
   }
 }
 
@@ -100,6 +98,127 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
   }
+
+  /* Custom scrollbar for finance feel */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  /* Glass card effect */
+  .glass-card {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid hsl(var(--border));
+  }
+
+  /* Gradient text */
+  .text-gradient-brand {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Status badges */
+  .status-open {
+    @apply bg-open-muted text-open border-open/30;
+  }
+
+  .status-profit {
+    @apply bg-profit-muted text-profit border-profit/30;
+  }
+
+  .status-loss {
+    @apply bg-loss-muted text-loss border-loss/30;
+  }
+
+  /* Target hit highlights */
+  .target-hit {
+    @apply ring-2 ring-profit ring-offset-2 ring-offset-background;
+    box-shadow: var(--shadow-glow-profit);
+  }
+
+  .sl-hit {
+    @apply ring-2 ring-loss ring-offset-2 ring-offset-background;
+    box-shadow: var(--shadow-glow-loss);
+  }
+
+  /* Monospace for prices */
+  .font-mono-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Pulse animation for live status */
+  .pulse-live {
+    animation: pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-live {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  /* Smooth card entrance */
+  .card-entrance {
+    animation: card-enter 0.3s ease-out;
+  }
+
+  @keyframes card-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer utilities {
+  /* Finance-specific utilities */
+  .bg-profit { background-color: hsl(var(--profit)); }
+  .bg-profit-muted { background-color: hsl(var(--profit-muted)); }
+  .text-profit { color: hsl(var(--profit)); }
+  
+  .bg-loss { background-color: hsl(var(--loss)); }
+  .bg-loss-muted { background-color: hsl(var(--loss-muted)); }
+  .text-loss { color: hsl(var(--loss)); }
+
+  .bg-open { background-color: hsl(var(--open)); }
+  .bg-open-muted { background-color: hsl(var(--open-muted)); }
+  .text-open { color: hsl(var(--open)); }
+
+  .bg-warning { background-color: hsl(var(--warning)); }
+  .bg-warning-muted { background-color: hsl(var(--warning-muted)); }
+  .text-warning { color: hsl(var(--warning)); }
+
+  /* Gradient backgrounds */
+  .bg-gradient-brand { background: var(--gradient-brand); }
+  .bg-gradient-card { background: var(--gradient-card); }
+  .bg-gradient-hero { background: var(--gradient-hero); }
+
+  /* Glow effects */
+  .shadow-glow-brand { box-shadow: var(--shadow-glow-brand); }
+  .shadow-glow-profit { box-shadow: var(--shadow-glow-profit); }
+  .shadow-glow-loss { box-shadow: var(--shadow-glow-loss); }
 }
