@@ -1,20 +1,22 @@
-import { ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { ReactNode, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   TrendingUp, 
   BarChart3, 
   Zap, 
   FileText,
-  Settings,
   Menu,
-  X
+  LogOut,
+  LogIn,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useState } from 'react';
+import { useAuthContext } from '@/components/AuthContext';
+import { toast } from 'sonner';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -112,6 +114,18 @@ function BottomNav() {
 
 function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAdmin, signOut } = useAuthContext();
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast.error('Failed to sign out');
+    } else {
+      toast.success('Signed out successfully');
+      navigate('/');
+    }
+  };
 
   return (
     <aside className="hidden md:flex flex-col w-64 bg-sidebar border-r border-sidebar-border h-screen fixed left-0 top-0">
@@ -132,10 +146,44 @@ function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-sidebar-border space-y-3">
+        {user ? (
+          <>
+            <div className="flex items-center gap-3 px-3 py-2 bg-accent/50 rounded-lg">
+              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
+                <User className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                {isAdmin && (
+                  <span className="text-[10px] text-primary font-medium uppercase">Admin</span>
+                )}
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              onClick={handleSignOut}
+              className="w-full justify-start text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </>
+        ) : (
+          <Button
+            onClick={() => navigate('/auth')}
+            className="w-full bg-gradient-brand text-primary-foreground"
+          >
+            <LogIn className="h-4 w-4 mr-2" />
+            Login
+          </Button>
+        )}
+        
         <div className="bg-gradient-card rounded-xl p-4 border border-border">
-          <p className="text-xs text-muted-foreground mb-2">Admin Panel</p>
-          <p className="text-sm font-medium text-foreground">stockPICKER v1.0</p>
+          <p className="text-xs text-muted-foreground mb-2">
+            {isAdmin ? 'Admin Panel' : 'stockPICKER'}
+          </p>
+          <p className="text-sm font-medium text-foreground">v1.0</p>
         </div>
       </div>
     </aside>
@@ -145,6 +193,19 @@ function Sidebar() {
 function MobileHeader() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAdmin, signOut } = useAuthContext();
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast.error('Failed to sign out');
+    } else {
+      toast.success('Signed out successfully');
+      setIsOpen(false);
+      navigate('/');
+    }
+  };
 
   return (
     <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
@@ -174,6 +235,43 @@ function MobileHeader() {
                 />
               ))}
             </nav>
+            
+            <div className="p-4 border-t border-sidebar-border space-y-3">
+              {user ? (
+                <>
+                  <div className="flex items-center gap-3 px-3 py-2 bg-accent/50 rounded-lg">
+                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      {isAdmin && (
+                        <span className="text-[10px] text-primary font-medium uppercase">Admin</span>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    onClick={handleSignOut}
+                    className="w-full justify-start text-muted-foreground hover:text-foreground"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/auth');
+                  }}
+                  className="w-full bg-gradient-brand text-primary-foreground"
+                >
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Login
+                </Button>
+              )}
+            </div>
           </SheetContent>
         </Sheet>
       </div>

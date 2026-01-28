@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Card } from '@/components/ui/card';
+import { useAuthContext } from '@/components/AuthContext';
 
 interface RecommendationCardProps {
   recommendation: CalculatedRecommendation;
@@ -31,6 +32,7 @@ export function RecommendationCard({
   onMarkNotExecuted,
   onUpdatePrice,
 }: RecommendationCardProps) {
+  const { isAdmin } = useAuthContext();
   const {
     id,
     stockName,
@@ -44,6 +46,7 @@ export function RecommendationCard({
     status,
     exitReason,
     riskReward,
+    quantity,
     minProfitPercent,
     maxProfitPercent,
     maxLossPercent,
@@ -78,37 +81,39 @@ export function RecommendationCard({
           </div>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => onUpdatePrice?.(id)}>
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Update Price
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onEdit?.(id)}>
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-            {status !== 'NOT_EXECUTED' && status !== 'EXIT' && (
-              <DropdownMenuItem onClick={() => onMarkNotExecuted?.(id)}>
-                <XCircle className="mr-2 h-4 w-4" />
-                Mark Not Executed
+        {isAdmin && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => onUpdatePrice?.(id)}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Update Price
               </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => onDelete?.(id)}
-              className="text-loss focus:text-loss"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem onClick={() => onEdit?.(id)}>
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+              {status !== 'NOT_EXECUTED' && status !== 'EXIT' && (
+                <DropdownMenuItem onClick={() => onMarkNotExecuted?.(id)}>
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Mark Not Executed
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => onDelete?.(id)}
+                className="text-loss focus:text-loss"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       {/* Current Price Section */}
@@ -137,9 +142,8 @@ export function RecommendationCard({
         <PriceBox label="Stoploss" price={stoploss} isHit={targetsHit.stoploss} isLoss />
       </div>
 
-      {/* Metrics */}
       <div className="px-4 pb-4">
-        <div className="grid grid-cols-3 gap-4 p-3 bg-muted/30 rounded-lg">
+        <div className="grid grid-cols-4 gap-4 p-3 bg-muted/30 rounded-lg">
           <div className="text-center">
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">R:R</p>
             <p className="font-mono-price text-sm font-semibold text-primary">
@@ -147,9 +151,15 @@ export function RecommendationCard({
             </p>
           </div>
           <div className="text-center">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Profit Range</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Qty</p>
+            <p className="font-mono-price text-sm font-semibold text-foreground">
+              {quantity}
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Profit</p>
             <p className="font-mono-price text-sm font-semibold text-profit">
-              {minProfitPercent}% - {maxProfitPercent}%
+              {minProfitPercent}%-{maxProfitPercent}%
             </p>
           </div>
           <div className="text-center">
