@@ -7,7 +7,7 @@ import { AuthProvider } from "@/components/AuthContext";
 import Index from "./pages/Index";
 import IntradayPage from "./pages/IntradayPage";
 import IntradayReportPage from "./pages/IntradayReportPage";
-import AuthPage from "./pages/AuthPage";
+import AdminAuthPage from "./pages/AdminAuthPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,7 +21,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/stockpicker/admin" element={<AdminAuthPage />} />
             <Route path="/intraday" element={<IntradayPage />} />
             <Route path="/intraday-report" element={<IntradayReportPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -214,76 +214,73 @@ export default function IntradayReportPage() {
           )}
         </div>
 
-        {/* Table */}
+        {/* Table - Mobile optimized */}
         <Card className="bg-card border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableHead className="text-muted-foreground">Stock</TableHead>
-                  <TableHead className="text-muted-foreground">Date</TableHead>
-                  <TableHead className="text-muted-foreground">Status</TableHead>
-                  <TableHead className="text-muted-foreground text-right">P&L</TableHead>
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border hover:bg-transparent">
+                <TableHead className="text-muted-foreground">Stock</TableHead>
+                <TableHead className="text-muted-foreground">Status</TableHead>
+                <TableHead className="text-muted-foreground text-right">P&L</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredRecommendations.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                    No records found
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRecommendations.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                      No records found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  <>
-                    {filteredRecommendations.map((rec) => (
-                      <TableRow key={rec.id} className="border-border">
-                        <TableCell className="font-medium text-foreground">
-                          {rec.stockName}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-sm">
+              ) : (
+                <>
+                  {filteredRecommendations.map((rec) => (
+                    <TableRow key={rec.id} className="border-border">
+                      <TableCell>
+                        <div className="font-medium text-foreground">{rec.stockName}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">
                           {new Date(rec.createdAt).toLocaleDateString('en-IN', {
                             day: '2-digit',
                             month: 'short',
                             year: 'numeric',
                           })}
-                        </TableCell>
-                        <TableCell>
-                          <StatusBadge status={rec.status} exitReason={rec.exitReason} />
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {rec.status === 'NOT_EXECUTED' ? (
-                            <span className="text-muted-foreground">—</span>
-                          ) : (
-                            <span className={cn(
-                              'font-mono font-semibold',
-                              rec.profitLoss > 0 ? 'text-profit' : 'text-loss'
-                            )}>
-                              {rec.profitLoss > 0 ? '+' : ''}{formatCurrency(rec.profitLoss)}
-                            </span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-
-                    {/* Summary Row */}
-                    <TableRow className="bg-secondary/30 border-border font-semibold">
-                      <TableCell colSpan={3} className="text-foreground">
-                        Total ({filteredRecommendations.length} records)
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge status={rec.status} exitReason={rec.exitReason} />
                       </TableCell>
                       <TableCell className="text-right">
-                        <span className={cn(
-                          'font-mono',
-                          totals.netProfitLoss >= 0 ? 'text-profit' : 'text-loss'
-                        )}>
-                          {totals.netProfitLoss >= 0 ? '+' : ''}{formatCurrency(totals.netProfitLoss)}
-                        </span>
+                        {rec.status === 'NOT_EXECUTED' ? (
+                          <span className="text-muted-foreground">—</span>
+                        ) : (
+                          <span className={cn(
+                            'font-mono font-semibold text-sm',
+                            rec.profitLoss > 0 ? 'text-profit' : 'text-loss'
+                          )}>
+                            {rec.profitLoss > 0 ? '+' : ''}{formatCurrency(rec.profitLoss)}
+                          </span>
+                        )}
                       </TableCell>
                     </TableRow>
-                  </>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  ))}
+
+                  {/* Summary Row */}
+                  <TableRow className="bg-secondary/30 border-border font-semibold">
+                    <TableCell colSpan={2} className="text-foreground">
+                      Total ({filteredRecommendations.length} records)
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className={cn(
+                        'font-mono text-sm',
+                        totals.netProfitLoss >= 0 ? 'text-profit' : 'text-loss'
+                      )}>
+                        {totals.netProfitLoss >= 0 ? '+' : ''}{formatCurrency(totals.netProfitLoss)}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                </>
+              )}
+            </TableBody>
+          </Table>
         </Card>
       </div>
     </AdminLayout>

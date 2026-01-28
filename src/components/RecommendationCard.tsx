@@ -134,8 +134,8 @@ export function RecommendationCard({
         </div>
       </div>
 
-      {/* Targets Grid */}
-      <div className="p-4 grid grid-cols-4 gap-2">
+      {/* Targets Grid - 2 rows on mobile, 4 cols on desktop */}
+      <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-2">
         <PriceBox label="Target 1" price={target1} isHit={targetsHit.target1} />
         <PriceBox label="Target 2" price={target2} isHit={targetsHit.target2} />
         <PriceBox label="Target 3" price={target3} isHit={targetsHit.target3} />
@@ -143,7 +143,8 @@ export function RecommendationCard({
       </div>
 
       <div className="px-4 pb-4">
-        <div className="grid grid-cols-4 gap-4 p-3 bg-muted/30 rounded-lg">
+        {/* Stats Grid - 2 rows on mobile, 4 cols on desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-muted/30 rounded-lg">
           <div className="text-center">
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">R:R</p>
             <p className="font-mono-price text-sm font-semibold text-primary">
