@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, LogIn } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { RecommendationCard } from '@/components/RecommendationCard';
 import { RecommendationForm } from '@/components/RecommendationForm';
@@ -121,11 +121,8 @@ export default function IntradayPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Intraday Recommendations</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Manage daily intraday trading recommendations
-            </p>
           </div>
-          {isAdmin ? (
+          {isAdmin && (
             <Button
               onClick={() => {
                 setEditingRec(null);
@@ -135,15 +132,6 @@ export default function IntradayPage() {
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Recommendation
-            </Button>
-          ) : (
-            <Button
-              onClick={() => navigate('/auth')}
-              variant="outline"
-              className="border-primary/50 text-primary hover:bg-primary/10"
-            >
-              <LogIn className="h-4 w-4 mr-2" />
-              Login to Manage
             </Button>
           )}
         </div>
