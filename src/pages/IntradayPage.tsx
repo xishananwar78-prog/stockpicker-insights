@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Plus, Filter, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Search, LogIn } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { RecommendationCard } from '@/components/RecommendationCard';
 import { RecommendationForm } from '@/components/RecommendationForm';
@@ -7,6 +8,7 @@ import { UpdatePriceDialog } from '@/components/UpdatePriceDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRecommendationStore } from '@/store/recommendationStore';
+import { useAuthContext } from '@/components/AuthContext';
 import { 
   calculateRecommendationStatus, 
   isWithin48Hours 
@@ -25,6 +27,8 @@ import {
 import { toast } from 'sonner';
 
 export default function IntradayPage() {
+  const navigate = useNavigate();
+  const { isAdmin } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingRec, setEditingRec] = useState<IntradayRecommendation | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -121,16 +125,27 @@ export default function IntradayPage() {
               Manage daily intraday trading recommendations
             </p>
           </div>
-          <Button
-            onClick={() => {
-              setEditingRec(null);
-              setIsFormOpen(true);
-            }}
-            className="bg-gradient-brand text-primary-foreground hover:opacity-90 shadow-glow-brand"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Recommendation
-          </Button>
+          {isAdmin ? (
+            <Button
+              onClick={() => {
+                setEditingRec(null);
+                setIsFormOpen(true);
+              }}
+              className="bg-gradient-brand text-primary-foreground hover:opacity-90 shadow-glow-brand"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Recommendation
+            </Button>
+          ) : (
+            <Button
+              onClick={() => navigate('/auth')}
+              variant="outline"
+              className="border-primary/50 text-primary hover:bg-primary/10"
+            >
+              <LogIn className="h-4 w-4 mr-2" />
+              Login to Manage
+            </Button>
+          )}
         </div>
 
         {/* Stats */}

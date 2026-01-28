@@ -5,6 +5,9 @@ import {
   ExitReason 
 } from '@/types/recommendation';
 
+// Investment amount per stock (₹1,00,000)
+const INVESTMENT_AMOUNT = 100000;
+
 export function calculateRecommendationStatus(
   rec: IntradayRecommendation
 ): CalculatedRecommendation {
@@ -20,22 +23,24 @@ export function calculateRecommendationStatus(
     manualExitReason 
   } = rec;
 
+  // Calculate quantity based on ₹1,00,000 investment
+  const quantity = Math.floor(INVESTMENT_AMOUNT / recommendedPrice);
+
   // Calculate base metrics
-  const investmentAmount = recommendedPrice; // Per share basis
   const riskAmount = Math.abs(recommendedPrice - stoploss);
   const rewardAmount = Math.abs(target3 - recommendedPrice);
   const riskReward = riskAmount > 0 ? rewardAmount / riskAmount : 0;
 
-  // Calculate profit/loss for each target
-  const profitTarget1 = Math.abs(target1 - recommendedPrice);
-  const profitTarget2 = Math.abs(target2 - recommendedPrice);
-  const profitTarget3 = Math.abs(target3 - recommendedPrice);
-  const maxLossAmount = Math.abs(recommendedPrice - stoploss);
+  // Calculate profit/loss for each target based on quantity
+  const profitTarget1 = quantity * Math.abs(target1 - recommendedPrice);
+  const profitTarget2 = quantity * Math.abs(target2 - recommendedPrice);
+  const profitTarget3 = quantity * Math.abs(target3 - recommendedPrice);
+  const maxLossAmount = quantity * Math.abs(recommendedPrice - stoploss);
 
-  // Calculate percentages
-  const minProfitPercent = (profitTarget1 / recommendedPrice) * 100;
-  const maxProfitPercent = (profitTarget3 / recommendedPrice) * 100;
-  const maxLossPercent = (maxLossAmount / recommendedPrice) * 100;
+  // Calculate percentages (based on investment amount)
+  const minProfitPercent = (profitTarget1 / INVESTMENT_AMOUNT) * 100;
+  const maxProfitPercent = (profitTarget3 / INVESTMENT_AMOUNT) * 100;
+  const maxLossPercent = (maxLossAmount / INVESTMENT_AMOUNT) * 100;
 
   // Determine which targets are hit and status
   let status: RecommendationStatus = 'OPEN';
@@ -56,6 +61,7 @@ export function calculateRecommendationStatus(
       status: 'NOT_EXECUTED',
       exitReason: 'MANUAL_EXIT',
       riskReward: Math.round(riskReward * 100) / 100,
+      quantity,
       minProfit: profitTarget1,
       maxProfit: profitTarget3,
       minProfitPercent: Math.round(minProfitPercent * 100) / 100,
@@ -134,7 +140,7 @@ export function calculateRecommendationStatus(
     }
   }
 
-  // Calculate actual profit/loss based on exit
+  // Calculate actual profit/loss based on exit (already includes quantity)
   let profitLoss = 0;
   if (status === 'EXIT') {
     if (exitReason === 'TARGET_1_HIT') {
@@ -148,21 +154,22 @@ export function calculateRecommendationStatus(
     }
   }
 
-  const profitLossPercent = (profitLoss / recommendedPrice) * 100;
+  const profitLossPercent = (profitLoss / INVESTMENT_AMOUNT) * 100;
 
   return {
     ...rec,
     status,
     exitReason,
     riskReward: Math.round(riskReward * 100) / 100,
-    minProfit: profitTarget1,
-    maxProfit: profitTarget3,
+    quantity,
+    minProfit: Math.round(profitTarget1),
+    maxProfit: Math.round(profitTarget3),
     minProfitPercent: Math.round(minProfitPercent * 100) / 100,
     maxProfitPercent: Math.round(maxProfitPercent * 100) / 100,
-    maxLoss: maxLossAmount,
+    maxLoss: Math.round(maxLossAmount),
     maxLossPercent: Math.round(maxLossPercent * 100) / 100,
     targetsHit,
-    profitLoss: Math.round(profitLoss * 100) / 100,
+    profitLoss: Math.round(profitLoss),
     profitLossPercent: Math.round(profitLossPercent * 100) / 100,
   };
 }

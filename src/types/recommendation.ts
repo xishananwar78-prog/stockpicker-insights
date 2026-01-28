@@ -30,6 +30,7 @@ export interface CalculatedRecommendation extends IntradayRecommendation {
   status: RecommendationStatus;
   exitReason: ExitReason;
   riskReward: number;
+  quantity: number; // Calculated based on ₹1,00,000 investment
   minProfit: number;
   maxProfit: number;
   minProfitPercent: number;
