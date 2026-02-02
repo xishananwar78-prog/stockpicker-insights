@@ -1,13 +1,15 @@
 export type TradeSide = 'BUY' | 'SELL';
 
-export type RecommendationStatus = 'OPEN' | 'EXECUTED' | 'EXIT' | 'NOT_EXECUTED';
+export type RecommendationStatus = 'OPEN' | 'EXIT';
 
 export type ExitReason = 
   | 'TARGET_1_HIT'
   | 'TARGET_2_HIT'
   | 'TARGET_3_HIT'
+  | 'PARTIAL_PROFIT'
+  | 'PARTIAL_LOSS'
   | 'STOPLOSS_HIT'
-  | 'MANUAL_EXIT'
+  | 'NOT_EXECUTED'
   | null;
 
 export interface IntradayRecommendation {
@@ -22,13 +24,14 @@ export interface IntradayRecommendation {
   stoploss: number;
   createdAt: Date;
   updatedAt: Date;
-  manualExitReason?: ExitReason;
-  isManuallyExited?: boolean;
+  // Exit fields - set when admin closes the recommendation
+  exitReason?: ExitReason;
+  exitPrice?: number; // Used for partial profit/loss exits
+  exitedAt?: Date;
 }
 
 export interface CalculatedRecommendation extends IntradayRecommendation {
   status: RecommendationStatus;
-  exitReason: ExitReason;
   riskReward: number;
   quantity: number; // Calculated based on ₹1,00,000 investment
   minProfit: number;
@@ -37,12 +40,6 @@ export interface CalculatedRecommendation extends IntradayRecommendation {
   maxProfitPercent: number;
   maxLoss: number;
   maxLossPercent: number;
-  targetsHit: {
-    target1: boolean;
-    target2: boolean;
-    target3: boolean;
-    stoploss: boolean;
-  };
   profitLoss: number;
   profitLossPercent: number;
 }

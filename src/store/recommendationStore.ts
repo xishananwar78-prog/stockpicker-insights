@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { IntradayRecommendation, TradeSide } from '@/types/recommendation';
+import { IntradayRecommendation, ExitReason } from '@/types/recommendation';
 
 interface RecommendationStore {
   intradayRecommendations: IntradayRecommendation[];
@@ -8,7 +8,7 @@ interface RecommendationStore {
   updateIntradayRecommendation: (id: string, rec: Partial<IntradayRecommendation>) => void;
   deleteIntradayRecommendation: (id: string) => void;
   updateCurrentPrice: (id: string, price: number) => void;
-  markAsNotExecuted: (id: string) => void;
+  exitRecommendation: (id: string, exitReason: ExitReason, exitPrice?: number) => void;
 }
 
 export const useRecommendationStore = create<RecommendationStore>()(
@@ -50,11 +50,17 @@ export const useRecommendationStore = create<RecommendationStore>()(
         }));
       },
 
-      markAsNotExecuted: (id) => {
+      exitRecommendation: (id, exitReason, exitPrice) => {
         set((state) => ({
           intradayRecommendations: state.intradayRecommendations.map((r) =>
             r.id === id 
-              ? { ...r, isManuallyExited: true, manualExitReason: 'MANUAL_EXIT', updatedAt: new Date() } 
+              ? { 
+                  ...r, 
+                  exitReason, 
+                  exitPrice,
+                  exitedAt: new Date(),
+                  updatedAt: new Date() 
+                } 
               : r
           ),
         }));
@@ -73,6 +79,7 @@ export const useRecommendationStore = create<RecommendationStore>()(
               ...r,
               createdAt: new Date(r.createdAt),
               updatedAt: new Date(r.updatedAt),
+              exitedAt: r.exitedAt ? new Date(r.exitedAt) : undefined,
             }));
           }
           return parsed;

@@ -16,7 +16,7 @@ const Index = () => {
       .map((rec) => calculateRecommendationStatus(rec));
 
     const openCount = active.filter((r) => r.status === 'OPEN').length;
-    const executedCount = active.filter((r) => r.status === 'EXECUTED').length;
+    const exitedCount = active.filter((r) => r.status === 'EXIT').length;
     
     const allCalculated = intradayRecommendations.map((rec) => 
       calculateRecommendationStatus(rec)
@@ -32,7 +32,7 @@ const Index = () => {
 
     return {
       openCount,
-      executedCount,
+      exitedCount,
       totalCount: intradayRecommendations.length,
       totalProfit,
       totalLoss,
@@ -46,7 +46,7 @@ const Index = () => {
       icon: Zap,
       title: 'Intraday',
       subtitle: 'Same-day trading recommendations',
-      stats: `${stats.openCount} open, ${stats.executedCount} executed`,
+      stats: `${stats.openCount} open, ${stats.exitedCount} exited`,
       gradient: 'from-amber-500/20 to-orange-500/20',
       iconColor: 'text-amber-500',
     },

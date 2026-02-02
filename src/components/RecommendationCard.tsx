@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { MoreVertical, Pencil, Trash2, XCircle, RefreshCw } from 'lucide-react';
+import { MoreVertical, Pencil, Trash2, LogOut, RefreshCw } from 'lucide-react';
 import { CalculatedRecommendation } from '@/types/recommendation';
 import { cn } from '@/lib/utils';
-import { formatCurrency, formatPercent } from '@/lib/recommendationUtils';
+import { formatCurrency, formatPercent, formatExitReason } from '@/lib/recommendationUtils';
 import { StatusBadge } from './StatusBadge';
 import { TradeSideBadge } from './TradeSideBadge';
 import { PriceBox } from './PriceBox';
@@ -21,7 +21,7 @@ interface RecommendationCardProps {
   recommendation: CalculatedRecommendation;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
-  onMarkNotExecuted?: (id: string) => void;
+  onExit?: (id: string) => void;
   onUpdatePrice?: (id: string) => void;
 }
 
@@ -29,7 +29,7 @@ export function RecommendationCard({
   recommendation,
   onEdit,
   onDelete,
-  onMarkNotExecuted,
+  onExit,
   onUpdatePrice,
 }: RecommendationCardProps) {
   const { isAdmin } = useAuthContext();
@@ -45,19 +45,18 @@ export function RecommendationCard({
     stoploss,
     status,
     exitReason,
+    exitPrice,
     riskReward,
     quantity,
     minProfitPercent,
     maxProfitPercent,
     maxLossPercent,
-    targetsHit,
     profitLoss,
     profitLossPercent,
     createdAt,
   } = recommendation;
 
   const isProfit = profitLoss > 0;
-  const isLoss = profitLoss < 0;
 
   return (
     <Card className="card-entrance bg-gradient-card border-border overflow-hidden">
@@ -69,7 +68,7 @@ export function RecommendationCard({
             <TradeSideBadge side={tradeSide} />
           </div>
           <div className="flex items-center gap-3">
-            <StatusBadge status={status} exitReason={exitReason} />
+            <StatusBadge status={status} exitReason={exitReason} exitPrice={exitPrice} />
             <span className="text-xs text-muted-foreground">
               {new Date(createdAt).toLocaleString('en-IN', {
                 day: '2-digit',
@@ -89,20 +88,23 @@ export function RecommendationCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => onUpdatePrice?.(id)}>
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Update Price
-              </DropdownMenuItem>
+              {status === 'OPEN' && (
+                <>
+                  <DropdownMenuItem onClick={() => onExit?.(id)}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Exit Trade
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onUpdatePrice?.(id)}>
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Update Price
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuItem onClick={() => onEdit?.(id)}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit
               </DropdownMenuItem>
-              {status !== 'NOT_EXECUTED' && status !== 'EXIT' && (
-                <DropdownMenuItem onClick={() => onMarkNotExecuted?.(id)}>
-                  <XCircle className="mr-2 h-4 w-4" />
-                  Mark Not Executed
-                </DropdownMenuItem>
-              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => onDelete?.(id)}
@@ -136,10 +138,10 @@ export function RecommendationCard({
 
       {/* Targets Grid - 2 rows on mobile, 4 cols on desktop */}
       <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-2">
-        <PriceBox label="Target 1" price={target1} isHit={targetsHit.target1} />
-        <PriceBox label="Target 2" price={target2} isHit={targetsHit.target2} />
-        <PriceBox label="Target 3" price={target3} isHit={targetsHit.target3} />
-        <PriceBox label="Stoploss" price={stoploss} isHit={targetsHit.stoploss} isLoss />
+        <PriceBox label="Target 1" price={target1} />
+        <PriceBox label="Target 2" price={target2} />
+        <PriceBox label="Target 3" price={target3} />
+        <PriceBox label="Stoploss" price={stoploss} isLoss />
       </div>
 
       <div className="px-4 pb-4">
@@ -172,7 +174,7 @@ export function RecommendationCard({
         </div>
 
         {/* P&L if exited */}
-        {status === 'EXIT' && (
+        {status === 'EXIT' && exitReason !== 'NOT_EXECUTED' && (
           <div className={cn(
             'mt-3 p-3 rounded-lg text-center',
             isProfit ? 'bg-profit-muted' : 'bg-loss-muted'
@@ -187,8 +189,15 @@ export function RecommendationCard({
               'text-xs',
               isProfit ? 'text-profit/80' : 'text-loss/80'
             )}>
-              {isProfit ? 'Profit Booked' : 'Loss Booked'}
+              {formatExitReason(exitReason, exitPrice)}
             </p>
+          </div>
+        )}
+
+        {/* Not Executed message */}
+        {status === 'EXIT' && exitReason === 'NOT_EXECUTED' && (
+          <div className="mt-3 p-3 rounded-lg text-center bg-muted">
+            <p className="text-sm font-medium text-muted-foreground">Not Executed</p>
           </div>
         )}
       </div>
