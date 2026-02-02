@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Filter, Calendar, Search, X, TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowLeft, Calendar, Search, X, TrendingUp, TrendingDown } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
@@ -25,10 +25,7 @@ import { useRecommendationStore } from '@/store/recommendationStore';
 import {
   calculateRecommendationStatus,
   formatCurrency,
-  formatPercent,
-  formatExitReason,
 } from '@/lib/recommendationUtils';
-import { RecommendationStatus, ExitReason } from '@/types/recommendation';
 import { cn } from '@/lib/utils';
 
 export default function IntradayReportPage() {
@@ -38,11 +35,11 @@ export default function IntradayReportPage() {
 
   const { intradayRecommendations } = useRecommendationStore();
 
-  // Calculate all recommendations with status
+  // Calculate all recommendations with status - only show exited ones
   const calculatedRecommendations = useMemo(() => {
     return intradayRecommendations
       .map((rec) => calculateRecommendationStatus(rec))
-      .filter((rec) => rec.status === 'EXIT' || rec.status === 'NOT_EXECUTED');
+      .filter((rec) => rec.status === 'EXIT');
   }, [intradayRecommendations]);
 
   // Apply filters
@@ -58,7 +55,7 @@ export default function IntradayReportPage() {
         if (statusFilter !== 'all') {
           if (statusFilter === 'profit' && rec.profitLoss <= 0) return false;
           if (statusFilter === 'loss' && rec.profitLoss >= 0) return false;
-          if (statusFilter === 'not_executed' && rec.status !== 'NOT_EXECUTED') return false;
+          if (statusFilter === 'not_executed' && rec.exitReason !== 'NOT_EXECUTED') return false;
         }
 
         // Date filter
@@ -83,7 +80,7 @@ export default function IntradayReportPage() {
       .reduce((sum, r) => sum + Math.abs(r.profitLoss), 0);
 
     const successfulTrades = filteredRecommendations.filter((r) => r.profitLoss > 0).length;
-    const totalTrades = filteredRecommendations.filter((r) => r.status !== 'NOT_EXECUTED').length;
+    const totalTrades = filteredRecommendations.filter((r) => r.exitReason !== 'NOT_EXECUTED').length;
     const winRate = totalTrades > 0 ? (successfulTrades / totalTrades) * 100 : 0;
 
     return {
@@ -246,10 +243,10 @@ export default function IntradayReportPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <StatusBadge status={rec.status} exitReason={rec.exitReason} />
+                        <StatusBadge status={rec.status} exitReason={rec.exitReason} exitPrice={rec.exitPrice} />
                       </TableCell>
                       <TableCell className="text-right">
-                        {rec.status === 'NOT_EXECUTED' ? (
+                        {rec.exitReason === 'NOT_EXECUTED' ? (
                           <span className="text-muted-foreground">—</span>
                         ) : (
                           <span className={cn(

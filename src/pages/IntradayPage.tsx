@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Plus, Search } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { RecommendationCard } from '@/components/RecommendationCard';
 import { RecommendationForm } from '@/components/RecommendationForm';
 import { UpdatePriceDialog } from '@/components/UpdatePriceDialog';
+import { ExitRuleDialog } from '@/components/ExitRuleDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRecommendationStore } from '@/store/recommendationStore';
@@ -13,7 +13,7 @@ import {
   calculateRecommendationStatus, 
   isWithin48Hours 
 } from '@/lib/recommendationUtils';
-import { IntradayRecommendation } from '@/types/recommendation';
+import { IntradayRecommendation, ExitReason } from '@/types/recommendation';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,12 +27,12 @@ import {
 import { toast } from 'sonner';
 
 export default function IntradayPage() {
-  const navigate = useNavigate();
   const { isAdmin } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingRec, setEditingRec] = useState<IntradayRecommendation | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [updatePriceRec, setUpdatePriceRec] = useState<IntradayRecommendation | null>(null);
+  const [exitRec, setExitRec] = useState<IntradayRecommendation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const {
@@ -41,7 +41,7 @@ export default function IntradayPage() {
     updateIntradayRecommendation,
     deleteIntradayRecommendation,
     updateCurrentPrice,
-    markAsNotExecuted,
+    exitRecommendation,
   } = useRecommendationStore();
 
   // Calculate status for all recommendations and filter
@@ -62,7 +62,6 @@ export default function IntradayPage() {
   }, [intradayRecommendations, searchQuery]);
 
   const openCount = calculatedRecommendations.filter(r => r.status === 'OPEN').length;
-  const executedCount = calculatedRecommendations.filter(r => r.status === 'EXECUTED').length;
   const exitedCount = calculatedRecommendations.filter(r => r.status === 'EXIT').length;
 
   const handleAdd = (data: Omit<IntradayRecommendation, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -109,9 +108,19 @@ export default function IntradayPage() {
     }
   };
 
-  const handleMarkNotExecuted = (id: string) => {
-    markAsNotExecuted(id);
-    toast.success('Marked as not executed');
+  const handleExit = (id: string) => {
+    const rec = intradayRecommendations.find((r) => r.id === id);
+    if (rec) {
+      setExitRec(rec);
+    }
+  };
+
+  const handleExitSubmit = (exitReason: ExitReason, exitPrice?: number) => {
+    if (exitRec) {
+      exitRecommendation(exitRec.id, exitReason, exitPrice);
+      setExitRec(null);
+      toast.success('Trade exited successfully');
+    }
   };
 
   return (
@@ -137,14 +146,10 @@ export default function IntradayPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div className="bg-open-muted rounded-xl p-4 border border-open/20">
             <p className="text-2xl font-bold text-open font-mono">{openCount}</p>
             <p className="text-xs text-open/80 uppercase tracking-wider">Open</p>
-          </div>
-          <div className="bg-warning-muted rounded-xl p-4 border border-warning/20">
-            <p className="text-2xl font-bold text-warning font-mono">{executedCount}</p>
-            <p className="text-xs text-warning/80 uppercase tracking-wider">Executed</p>
           </div>
           <div className="bg-profit-muted rounded-xl p-4 border border-profit/20">
             <p className="text-2xl font-bold text-profit font-mono">{exitedCount}</p>
@@ -185,7 +190,7 @@ export default function IntradayPage() {
                 recommendation={rec}
                 onEdit={handleEdit}
                 onDelete={(id) => setDeletingId(id)}
-                onMarkNotExecuted={handleMarkNotExecuted}
+                onExit={handleExit}
                 onUpdatePrice={handleUpdatePrice}
               />
             ))
@@ -213,6 +218,20 @@ export default function IntradayPage() {
           onSubmit={handlePriceUpdate}
           stockName={updatePriceRec.stockName}
           currentPrice={updatePriceRec.currentPrice}
+        />
+      )}
+
+      {/* Exit Rule Dialog */}
+      {exitRec && (
+        <ExitRuleDialog
+          open={!!exitRec}
+          onOpenChange={(open) => !open && setExitRec(null)}
+          onSubmit={handleExitSubmit}
+          stockName={exitRec.stockName}
+          target1={exitRec.target1}
+          target2={exitRec.target2}
+          target3={exitRec.target3}
+          stoploss={exitRec.stoploss}
         />
       )}
 

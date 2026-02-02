@@ -12,15 +12,14 @@ export function calculateRecommendationStatus(
   rec: IntradayRecommendation
 ): CalculatedRecommendation {
   const { 
-    currentPrice, 
     tradeSide, 
     recommendedPrice, 
     target1, 
     target2, 
     target3, 
     stoploss,
-    isManuallyExited,
-    manualExitReason 
+    exitReason,
+    exitPrice 
   } = rec;
 
   // Calculate quantity based on ₹1,00,000 investment
@@ -42,115 +41,33 @@ export function calculateRecommendationStatus(
   const maxProfitPercent = (profitTarget3 / INVESTMENT_AMOUNT) * 100;
   const maxLossPercent = (maxLossAmount / INVESTMENT_AMOUNT) * 100;
 
-  // Determine which targets are hit and status
-  let status: RecommendationStatus = 'OPEN';
-  let exitReason: ExitReason = null;
-  let targetsHit = {
-    target1: false,
-    target2: false,
-    target3: false,
-    stoploss: false,
-  };
+  // Status is simply: OPEN until admin sets exit, then EXIT
+  const status: RecommendationStatus = exitReason ? 'EXIT' : 'OPEN';
 
-  // Handle manual exit
-  if (isManuallyExited) {
-    status = 'EXIT';
-    exitReason = manualExitReason || 'MANUAL_EXIT';
-    return {
-      ...rec,
-      status: 'NOT_EXECUTED',
-      exitReason: 'MANUAL_EXIT',
-      riskReward: Math.round(riskReward * 100) / 100,
-      quantity,
-      minProfit: profitTarget1,
-      maxProfit: profitTarget3,
-      minProfitPercent: Math.round(minProfitPercent * 100) / 100,
-      maxProfitPercent: Math.round(maxProfitPercent * 100) / 100,
-      maxLoss: maxLossAmount,
-      maxLossPercent: Math.round(maxLossPercent * 100) / 100,
-      targetsHit,
-      profitLoss: 0,
-      profitLossPercent: 0,
-    };
-  }
-
-  if (tradeSide === 'BUY') {
-    // BUY Logic
-    if (currentPrice < recommendedPrice) {
-      status = 'OPEN';
-    } else if (currentPrice >= recommendedPrice && currentPrice < target1) {
-      status = 'EXECUTED';
-    } else if (currentPrice >= target1 && currentPrice < target2) {
-      status = 'EXIT';
-      exitReason = 'TARGET_1_HIT';
-      targetsHit.target1 = true;
-    } else if (currentPrice >= target2 && currentPrice < target3) {
-      status = 'EXIT';
-      exitReason = 'TARGET_2_HIT';
-      targetsHit.target1 = true;
-      targetsHit.target2 = true;
-    } else if (currentPrice >= target3) {
-      status = 'EXIT';
-      exitReason = 'TARGET_3_HIT';
-      targetsHit.target1 = true;
-      targetsHit.target2 = true;
-      targetsHit.target3 = true;
-    }
-
-    // Check stoploss
-    if (currentPrice <= stoploss) {
-      status = 'EXIT';
-      exitReason = 'STOPLOSS_HIT';
-      targetsHit.stoploss = true;
-      targetsHit.target1 = false;
-      targetsHit.target2 = false;
-      targetsHit.target3 = false;
-    }
-  } else {
-    // SELL Logic (reversed)
-    if (currentPrice > recommendedPrice) {
-      status = 'OPEN';
-    } else if (currentPrice <= recommendedPrice && currentPrice > target1) {
-      status = 'EXECUTED';
-    } else if (currentPrice <= target1 && currentPrice > target2) {
-      status = 'EXIT';
-      exitReason = 'TARGET_1_HIT';
-      targetsHit.target1 = true;
-    } else if (currentPrice <= target2 && currentPrice > target3) {
-      status = 'EXIT';
-      exitReason = 'TARGET_2_HIT';
-      targetsHit.target1 = true;
-      targetsHit.target2 = true;
-    } else if (currentPrice <= target3) {
-      status = 'EXIT';
-      exitReason = 'TARGET_3_HIT';
-      targetsHit.target1 = true;
-      targetsHit.target2 = true;
-      targetsHit.target3 = true;
-    }
-
-    // Check stoploss
-    if (currentPrice >= stoploss) {
-      status = 'EXIT';
-      exitReason = 'STOPLOSS_HIT';
-      targetsHit.stoploss = true;
-      targetsHit.target1 = false;
-      targetsHit.target2 = false;
-      targetsHit.target3 = false;
-    }
-  }
-
-  // Calculate actual profit/loss based on exit (already includes quantity)
+  // Calculate actual profit/loss based on exit reason
   let profitLoss = 0;
-  if (status === 'EXIT') {
-    if (exitReason === 'TARGET_1_HIT') {
-      profitLoss = profitTarget1;
-    } else if (exitReason === 'TARGET_2_HIT') {
-      profitLoss = profitTarget2;
-    } else if (exitReason === 'TARGET_3_HIT') {
-      profitLoss = profitTarget3;
-    } else if (exitReason === 'STOPLOSS_HIT') {
-      profitLoss = -maxLossAmount;
+  if (exitReason && exitReason !== 'NOT_EXECUTED') {
+    const multiplier = tradeSide === 'BUY' ? 1 : -1;
+    
+    switch (exitReason) {
+      case 'TARGET_1_HIT':
+        profitLoss = quantity * (target1 - recommendedPrice) * multiplier;
+        break;
+      case 'TARGET_2_HIT':
+        profitLoss = quantity * (target2 - recommendedPrice) * multiplier;
+        break;
+      case 'TARGET_3_HIT':
+        profitLoss = quantity * (target3 - recommendedPrice) * multiplier;
+        break;
+      case 'STOPLOSS_HIT':
+        profitLoss = quantity * (stoploss - recommendedPrice) * multiplier;
+        break;
+      case 'PARTIAL_PROFIT':
+      case 'PARTIAL_LOSS':
+        if (exitPrice) {
+          profitLoss = quantity * (exitPrice - recommendedPrice) * multiplier;
+        }
+        break;
     }
   }
 
@@ -159,7 +76,6 @@ export function calculateRecommendationStatus(
   return {
     ...rec,
     status,
-    exitReason,
     riskReward: Math.round(riskReward * 100) / 100,
     quantity,
     minProfit: Math.round(profitTarget1),
@@ -168,7 +84,6 @@ export function calculateRecommendationStatus(
     maxProfitPercent: Math.round(maxProfitPercent * 100) / 100,
     maxLoss: Math.round(maxLossAmount),
     maxLossPercent: Math.round(maxLossPercent * 100) / 100,
-    targetsHit,
     profitLoss: Math.round(profitLoss),
     profitLossPercent: Math.round(profitLossPercent * 100) / 100,
   };
@@ -180,17 +95,21 @@ export function isWithin48Hours(date: Date): boolean {
   return hoursDiff <= 48;
 }
 
-export function formatExitReason(reason: ExitReason): string {
+export function formatExitReason(reason: ExitReason, exitPrice?: number): string {
   switch (reason) {
     case 'TARGET_1_HIT':
       return 'Target 1 Hit';
     case 'TARGET_2_HIT':
-      return 'Target 1 & 2 Hit';
+      return 'Target 2 Hit';
     case 'TARGET_3_HIT':
-      return 'All Targets Hit';
+      return 'Target 3 Hit';
     case 'STOPLOSS_HIT':
       return 'Stoploss Hit';
-    case 'MANUAL_EXIT':
+    case 'PARTIAL_PROFIT':
+      return exitPrice ? `Partial Profit @ ₹${exitPrice}` : 'Partial Profit';
+    case 'PARTIAL_LOSS':
+      return exitPrice ? `Partial Loss @ ₹${exitPrice}` : 'Partial Loss';
+    case 'NOT_EXECUTED':
       return 'Not Executed';
     default:
       return '';
