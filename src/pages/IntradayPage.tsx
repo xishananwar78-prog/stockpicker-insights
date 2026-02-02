@@ -168,13 +168,15 @@ export default function IntradayPage() {
           {calculatedRecommendations.length === 0 ? (
             <div className="text-center py-12 bg-card rounded-xl border border-border">
               <p className="text-muted-foreground">No recommendations found</p>
-              <Button
-                onClick={() => setIsFormOpen(true)}
-                variant="link"
-                className="text-primary mt-2"
-              >
-                Add your first recommendation
-              </Button>
+              {isAdmin && (
+                <Button
+                  onClick={() => setIsFormOpen(true)}
+                  variant="link"
+                  className="text-primary mt-2"
+                >
+                  Add your first recommendation
+                </Button>
+              )}
             </div>
           ) : (
             calculatedRecommendations.map((rec) => (

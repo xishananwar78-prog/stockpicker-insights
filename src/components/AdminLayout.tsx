@@ -8,7 +8,6 @@ import {
   FileText,
   Menu,
   LogOut,
-  LogIn,
   User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -147,7 +146,7 @@ function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-sidebar-border space-y-3">
-        {user ? (
+        {user && (
           <>
             <div className="flex items-center gap-3 px-3 py-2 bg-accent/50 rounded-lg">
               <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
@@ -169,14 +168,6 @@ function Sidebar() {
               Sign Out
             </Button>
           </>
-        ) : (
-          <Button
-            onClick={() => navigate('/auth')}
-            className="w-full bg-gradient-brand text-primary-foreground"
-          >
-            <LogIn className="h-4 w-4 mr-2" />
-            Login
-          </Button>
         )}
         
         <div className="bg-gradient-card rounded-xl p-4 border border-border">
@@ -237,7 +228,7 @@ function MobileHeader() {
             </nav>
             
             <div className="p-4 border-t border-sidebar-border space-y-3">
-              {user ? (
+              {user && (
                 <>
                   <div className="flex items-center gap-3 px-3 py-2 bg-accent/50 rounded-lg">
                     <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
@@ -259,17 +250,6 @@ function MobileHeader() {
                     Sign Out
                   </Button>
                 </>
-              ) : (
-                <Button
-                  onClick={() => {
-                    setIsOpen(false);
-                    navigate('/auth');
-                  }}
-                  className="w-full bg-gradient-brand text-primary-foreground"
-                >
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Login
-                </Button>
               )}
             </div>
           </SheetContent>

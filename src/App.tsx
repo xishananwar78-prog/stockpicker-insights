@@ -21,7 +21,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/stockpicker/admin" element={<AdminAuthPage />} />
+            <Route path="/admin" element={<AdminAuthPage />} />
             <Route path="/intraday" element={<IntradayPage />} />
             <Route path="/intraday-report" element={<IntradayReportPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
