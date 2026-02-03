@@ -9,10 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRecommendationStore } from '@/store/recommendationStore';
 import { useAuthContext } from '@/components/AuthContext';
-import { 
-  calculateRecommendationStatus, 
-  isWithin48Hours 
-} from '@/lib/recommendationUtils';
+import { calculateRecommendationStatus } from '@/lib/recommendationUtils';
 import { IntradayRecommendation, ExitReason } from '@/types/recommendation';
 import {
   AlertDialog,
@@ -44,25 +41,18 @@ export default function IntradayPage() {
     exitRecommendation,
   } = useRecommendationStore();
 
-  // Calculate status for all recommendations and filter
+  // Calculate status for all recommendations and filter - show only OPEN recommendations
   const calculatedRecommendations = useMemo(() => {
     return intradayRecommendations
-      .filter((rec) => isWithin48Hours(rec.createdAt))
       .map((rec) => calculateRecommendationStatus(rec))
+      .filter((rec) => rec.status === 'OPEN') // Only show OPEN recommendations
       .filter((rec) => 
         rec.stockName.toLowerCase().includes(searchQuery.toLowerCase())
       )
-      .sort((a, b) => {
-        // Open status first
-        if (a.status === 'OPEN' && b.status !== 'OPEN') return -1;
-        if (b.status === 'OPEN' && a.status !== 'OPEN') return 1;
-        // Then by date
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      });
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [intradayRecommendations, searchQuery]);
 
-  const openCount = calculatedRecommendations.filter(r => r.status === 'OPEN').length;
-  const exitedCount = calculatedRecommendations.filter(r => r.status === 'EXIT').length;
+  const openCount = calculatedRecommendations.length;
 
   const handleAdd = (data: Omit<IntradayRecommendation, 'id' | 'createdAt' | 'updatedAt'>) => {
     addIntradayRecommendation(data);
@@ -146,15 +136,9 @@ export default function IntradayPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-open-muted rounded-xl p-4 border border-open/20">
-            <p className="text-2xl font-bold text-open font-mono">{openCount}</p>
-            <p className="text-xs text-open/80 uppercase tracking-wider">Open</p>
-          </div>
-          <div className="bg-profit-muted rounded-xl p-4 border border-profit/20">
-            <p className="text-2xl font-bold text-profit font-mono">{exitedCount}</p>
-            <p className="text-xs text-profit/80 uppercase tracking-wider">Exited</p>
-          </div>
+        <div className="bg-open-muted rounded-xl p-4 border border-open/20 max-w-xs">
+          <p className="text-2xl font-bold text-open font-mono">{openCount}</p>
+          <p className="text-xs text-open/80 uppercase tracking-wider">Open Recommendations</p>
         </div>
 
         {/* Search */}
