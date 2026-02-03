@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Calendar, X } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { RecommendationCard } from '@/components/RecommendationCard';
 import { RecommendationForm } from '@/components/RecommendationForm';
@@ -7,6 +7,13 @@ import { UpdatePriceDialog } from '@/components/UpdatePriceDialog';
 import { ExitRuleDialog } from '@/components/ExitRuleDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useRecommendationStore } from '@/store/recommendationStore';
 import { useAuthContext } from '@/components/AuthContext';
 import { calculateRecommendationStatus } from '@/lib/recommendationUtils';
@@ -31,6 +38,8 @@ export default function IntradayPage() {
   const [updatePriceRec, setUpdatePriceRec] = useState<IntradayRecommendation | null>(null);
   const [exitRec, setExitRec] = useState<IntradayRecommendation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('open');
+  const [dateFilter, setDateFilter] = useState<string>('');
 
   const {
     intradayRecommendations,
@@ -41,18 +50,42 @@ export default function IntradayPage() {
     exitRecommendation,
   } = useRecommendationStore();
 
-  // Calculate status for all recommendations and filter - show only OPEN recommendations
+  // Calculate status for all recommendations and apply filters
   const calculatedRecommendations = useMemo(() => {
     return intradayRecommendations
       .map((rec) => calculateRecommendationStatus(rec))
-      .filter((rec) => rec.status === 'OPEN') // Only show OPEN recommendations
-      .filter((rec) => 
-        rec.stockName.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      .filter((rec) => {
+        // Status filter
+        if (statusFilter === 'open' && rec.status !== 'OPEN') return false;
+        if (statusFilter === 'exit' && rec.status !== 'EXIT') return false;
+        
+        // Search filter
+        if (searchQuery && !rec.stockName.toLowerCase().includes(searchQuery.toLowerCase())) {
+          return false;
+        }
+        
+        // Date filter
+        if (dateFilter) {
+          const recDate = new Date(rec.createdAt).toISOString().split('T')[0];
+          if (recDate !== dateFilter) return false;
+        }
+        
+        return true;
+      })
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [intradayRecommendations, searchQuery]);
+  }, [intradayRecommendations, searchQuery, statusFilter, dateFilter]);
 
-  const openCount = calculatedRecommendations.length;
+  const openCount = intradayRecommendations
+    .map((rec) => calculateRecommendationStatus(rec))
+    .filter((rec) => rec.status === 'OPEN').length;
+  
+  const clearFilters = () => {
+    setSearchQuery('');
+    setStatusFilter('open');
+    setDateFilter('');
+  };
+
+  const hasActiveFilters = searchQuery || statusFilter !== 'open' || dateFilter;
 
   const handleAdd = (data: Omit<IntradayRecommendation, 'id' | 'createdAt' | 'updatedAt'>) => {
     addIntradayRecommendation(data);
@@ -141,15 +174,49 @@ export default function IntradayPage() {
           <p className="text-xs text-open/80 uppercase tracking-wider">Open Recommendations</p>
         </div>
 
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by stock name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-input border-border"
-          />
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search stock..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-input border-border"
+            />
+          </div>
+
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full sm:w-36 bg-input border-border">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="open">Open</SelectItem>
+              <SelectItem value="exit">Exited</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="pl-10 bg-input border-border w-full sm:w-44"
+            />
+          </div>
+
+          {hasActiveFilters && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={clearFilters}
+              className="shrink-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         {/* Recommendations List */}

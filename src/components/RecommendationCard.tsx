@@ -138,10 +138,27 @@ export function RecommendationCard({
 
       {/* Targets Grid - 2 rows on mobile, 4 cols on desktop */}
       <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-2">
-        <PriceBox label="Target 1" price={target1} />
-        <PriceBox label="Target 2" price={target2} />
-        <PriceBox label="Target 3" price={target3} />
-        <PriceBox label="Stoploss" price={stoploss} isLoss />
+        <PriceBox 
+          label="Target 1" 
+          price={target1} 
+          isHit={exitReason === 'TARGET_1_HIT'}
+        />
+        <PriceBox 
+          label="Target 2" 
+          price={target2} 
+          isHit={exitReason === 'TARGET_2_HIT'}
+        />
+        <PriceBox 
+          label="Target 3" 
+          price={target3} 
+          isHit={exitReason === 'TARGET_3_HIT'}
+        />
+        <PriceBox 
+          label="Stoploss" 
+          price={stoploss} 
+          isLoss 
+          isHit={exitReason === 'STOPLOSS_HIT'}
+        />
       </div>
 
       <div className="px-4 pb-4">
