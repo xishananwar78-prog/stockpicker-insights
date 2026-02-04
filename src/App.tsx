@@ -7,6 +7,7 @@ import { AuthProvider } from "@/components/AuthContext";
 import Index from "./pages/Index";
 import IntradayPage from "./pages/IntradayPage";
 import IntradayReportPage from "./pages/IntradayReportPage";
+import SwingPage from "./pages/SwingPage";
 import AdminAuthPage from "./pages/AdminAuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/admin" element={<AdminAuthPage />} />
             <Route path="/intraday" element={<IntradayPage />} />
             <Route path="/intraday-report" element={<IntradayReportPage />} />
+            <Route path="/swing" element={<SwingPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

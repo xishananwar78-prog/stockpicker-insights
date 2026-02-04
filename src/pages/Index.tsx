@@ -23,7 +23,6 @@ const Index = () => {
       subtitle: 'Multi-day position trades',
       gradient: 'from-blue-500/20 to-cyan-500/20',
       iconColor: 'text-blue-500',
-      disabled: true,
     },
     {
       href: '/breakout',
@@ -113,6 +112,12 @@ const Index = () => {
               className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
             >
               + Add Intraday
+            </Link>
+            <Link
+              to="/swing"
+              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              + Add Swing
             </Link>
             <Link
               to="/intraday-report"
