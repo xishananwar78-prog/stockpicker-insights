@@ -30,6 +30,33 @@ export interface IntradayRecommendation {
   exitedAt?: Date;
 }
 
+export interface SwingRecommendation {
+  id: string;
+  stockName: string;
+  currentPrice: number;
+  imageUrl?: string; // Optional chart/analysis image
+  target1: number;
+  target2: number;
+  stoploss: number;
+  allocation: string; // e.g., "10%", "₹50,000"
+  notes?: string; // Optional notes/analysis
+  createdAt: Date;
+  updatedAt: Date;
+  // Exit fields - set when admin closes the recommendation
+  exitReason?: SwingExitReason;
+  exitPrice?: number; // Used for partial profit/loss exits
+  exitedAt?: Date;
+}
+
+export type SwingExitReason = 
+  | 'TARGET_1_HIT'
+  | 'TARGET_2_HIT'
+  | 'PARTIAL_PROFIT'
+  | 'PARTIAL_LOSS'
+  | 'STOPLOSS_HIT'
+  | 'NOT_EXECUTED'
+  | null;
+
 export interface CalculatedRecommendation extends IntradayRecommendation {
   status: RecommendationStatus;
   riskReward: number;
@@ -40,6 +67,13 @@ export interface CalculatedRecommendation extends IntradayRecommendation {
   maxProfitPercent: number;
   maxLoss: number;
   maxLossPercent: number;
+  profitLoss: number;
+  profitLossPercent: number;
+}
+
+export interface CalculatedSwingRecommendation extends SwingRecommendation {
+  status: RecommendationStatus;
+  riskReward: number;
   profitLoss: number;
   profitLossPercent: number;
 }
