@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Zap, TrendingUp, BarChart3, ArrowRight } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { Card } from '@/components/ui/card';
+import { UpstoxBanner } from '@/components/UpstoxBanner';
 import { cn } from '@/lib/utils';
 
 const Index = () => {
@@ -48,6 +49,8 @@ const Index = () => {
           </p>
         </div>
 
+        {/* Upstox Banner */}
+        <UpstoxBanner />
 
         {/* Menu Cards */}
         <div className="space-y-3">
