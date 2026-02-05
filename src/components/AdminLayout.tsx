@@ -25,7 +25,7 @@ const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/intraday', label: 'Intraday', icon: Zap },
   { href: '/intraday-report', label: 'Daily Report', icon: FileText },
-  { href: '/swing', label: 'Swing', icon: TrendingUp, disabled: true },
+  { href: '/swing', label: 'Swing', icon: TrendingUp },
   { href: '/breakout', label: 'Breakout', icon: BarChart3, disabled: true },
 ];
 
