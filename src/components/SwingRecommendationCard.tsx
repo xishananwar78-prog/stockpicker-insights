@@ -83,7 +83,7 @@ export function SwingRecommendationCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              {status === 'OPEN' && (
+              {status === 'OPEN' ? (
                 <>
                   <DropdownMenuItem onClick={() => onExit?.(id)}>
                     <LogOut className="mr-2 h-4 w-4" />
@@ -92,6 +92,14 @@ export function SwingRecommendationCard({
                   <DropdownMenuItem onClick={() => onUpdatePrice?.(id)}>
                     <RefreshCw className="mr-2 h-4 w-4" />
                     Update Price
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem onClick={() => onExit?.(id)}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit Exit
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                 </>
@@ -150,7 +158,7 @@ export function SwingRecommendationCard({
         <PriceBox 
           label="Target 1" 
           price={target1} 
-          isHit={exitReason === 'TARGET_1_HIT'}
+          isHit={exitReason === 'TARGET_1_HIT' || exitReason === 'TARGET_2_HIT'}
         />
         <PriceBox 
           label="Target 2" 
