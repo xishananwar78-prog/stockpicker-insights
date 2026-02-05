@@ -55,6 +55,7 @@ const Index = () => {
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground">Recommendations</h2>
           
+          <div className="space-y-3">
           {menuItems.map((item) => {
             const Icon = item.icon;
             
@@ -101,6 +102,7 @@ const Index = () => {
               </Link>
             );
           })}
+          </div>
         </div>
 
         {/* Quick Actions */}
