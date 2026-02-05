@@ -1,12 +1,11 @@
  # Enable RewriteEngine
  RewriteEngine On
  
- # Set the base directory
+ # Set the base directory for rewrite rules
  RewriteBase /stockpicker/
  
- # If the requested file or directory exists, serve it directly
+ # If the requested file or directory doesn't exist,
+ # rewrite the request to index.html
  RewriteCond %{REQUEST_FILENAME} !-f
  RewriteCond %{REQUEST_FILENAME} !-d
- 
- # Otherwise, redirect all requests to index.html for SPA routing
- RewriteRule ^ index.html [QSA,L]
+ RewriteRule ^(.*)$ index.html [L,QSA]
