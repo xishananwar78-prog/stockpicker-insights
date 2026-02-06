@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      intraday_recommendations: {
+        Row: {
+          created_at: string
+          current_price: number
+          exit_price: number | null
+          exit_reason:
+            | Database["public"]["Enums"]["intraday_exit_reason"]
+            | null
+          exited_at: string | null
+          id: string
+          recommended_price: number
+          stock_name: string
+          stoploss: number
+          target1: number
+          target2: number
+          target3: number
+          trade_side: Database["public"]["Enums"]["trade_side"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_price: number
+          exit_price?: number | null
+          exit_reason?:
+            | Database["public"]["Enums"]["intraday_exit_reason"]
+            | null
+          exited_at?: string | null
+          id?: string
+          recommended_price: number
+          stock_name: string
+          stoploss: number
+          target1: number
+          target2: number
+          target3: number
+          trade_side: Database["public"]["Enums"]["trade_side"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_price?: number
+          exit_price?: number | null
+          exit_reason?:
+            | Database["public"]["Enums"]["intraday_exit_reason"]
+            | null
+          exited_at?: string | null
+          id?: string
+          recommended_price?: number
+          stock_name?: string
+          stoploss?: number
+          target1?: number
+          target2?: number
+          target3?: number
+          trade_side?: Database["public"]["Enums"]["trade_side"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -35,6 +92,57 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      swing_recommendations: {
+        Row: {
+          allocation: string
+          created_at: string
+          current_price: number
+          exit_price: number | null
+          exit_reason: Database["public"]["Enums"]["swing_exit_reason"] | null
+          exited_at: string | null
+          id: string
+          image_url: string | null
+          notes: string | null
+          stock_name: string
+          stoploss: number
+          target1: number
+          target2: number
+          updated_at: string
+        }
+        Insert: {
+          allocation: string
+          created_at?: string
+          current_price: number
+          exit_price?: number | null
+          exit_reason?: Database["public"]["Enums"]["swing_exit_reason"] | null
+          exited_at?: string | null
+          id?: string
+          image_url?: string | null
+          notes?: string | null
+          stock_name: string
+          stoploss: number
+          target1: number
+          target2: number
+          updated_at?: string
+        }
+        Update: {
+          allocation?: string
+          created_at?: string
+          current_price?: number
+          exit_price?: number | null
+          exit_reason?: Database["public"]["Enums"]["swing_exit_reason"] | null
+          exited_at?: string | null
+          id?: string
+          image_url?: string | null
+          notes?: string | null
+          stock_name?: string
+          stoploss?: number
+          target1?: number
+          target2?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -74,6 +182,22 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      intraday_exit_reason:
+        | "TARGET_1_HIT"
+        | "TARGET_2_HIT"
+        | "TARGET_3_HIT"
+        | "PARTIAL_PROFIT"
+        | "PARTIAL_LOSS"
+        | "STOPLOSS_HIT"
+        | "NOT_EXECUTED"
+      swing_exit_reason:
+        | "TARGET_1_HIT"
+        | "TARGET_2_HIT"
+        | "PARTIAL_PROFIT"
+        | "PARTIAL_LOSS"
+        | "STOPLOSS_HIT"
+        | "NOT_EXECUTED"
+      trade_side: "BUY" | "SELL"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -202,6 +326,24 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      intraday_exit_reason: [
+        "TARGET_1_HIT",
+        "TARGET_2_HIT",
+        "TARGET_3_HIT",
+        "PARTIAL_PROFIT",
+        "PARTIAL_LOSS",
+        "STOPLOSS_HIT",
+        "NOT_EXECUTED",
+      ],
+      swing_exit_reason: [
+        "TARGET_1_HIT",
+        "TARGET_2_HIT",
+        "PARTIAL_PROFIT",
+        "PARTIAL_LOSS",
+        "STOPLOSS_HIT",
+        "NOT_EXECUTED",
+      ],
+      trade_side: ["BUY", "SELL"],
     },
   },
 } as const

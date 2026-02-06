@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Search, X, TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowLeft, Calendar, Search, X, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useRecommendationStore } from '@/store/recommendationStore';
+import { useIntradayRecommendations } from '@/hooks/useIntradayRecommendations';
 import {
   calculateRecommendationStatus,
   formatCurrency,
@@ -33,7 +33,7 @@ export default function IntradayReportPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('');
 
-  const { intradayRecommendations } = useRecommendationStore();
+  const { data: intradayRecommendations = [], isLoading } = useIntradayRecommendations();
 
   // Calculate all recommendations with status - only show exited ones
   const calculatedRecommendations = useMemo(() => {
@@ -100,6 +100,16 @@ export default function IntradayReportPage() {
   };
 
   const hasActiveFilters = searchQuery || statusFilter !== 'all' || dateFilter;
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>

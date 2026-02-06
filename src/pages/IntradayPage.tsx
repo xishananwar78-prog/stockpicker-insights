@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Calendar, X } from 'lucide-react';
+import { Plus, Calendar, X, Loader2 } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { RecommendationCard } from '@/components/RecommendationCard';
 import { RecommendationForm } from '@/components/RecommendationForm';
@@ -15,7 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useRecommendationStore } from '@/store/recommendationStore';
+import {
+  useIntradayRecommendations,
+  useAddIntradayRecommendation,
+  useUpdateIntradayRecommendation,
+  useDeleteIntradayRecommendation,
+  useUpdateIntradayCurrentPrice,
+  useExitIntradayRecommendation,
+} from '@/hooks/useIntradayRecommendations';
 import { useAuthContext } from '@/components/AuthContext';
 import { calculateRecommendationStatus } from '@/lib/recommendationUtils';
 import { IntradayRecommendation, ExitReason } from '@/types/recommendation';
@@ -29,7 +36,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
 
 export default function IntradayPage() {
   const { isAdmin } = useAuthContext();
@@ -41,14 +47,13 @@ export default function IntradayPage() {
   const [statusFilter, setStatusFilter] = useState<string>('open');
   const [dateFilter, setDateFilter] = useState<string>('');
 
-  const {
-    intradayRecommendations,
-    addIntradayRecommendation,
-    updateIntradayRecommendation,
-    deleteIntradayRecommendation,
-    updateCurrentPrice,
-    exitRecommendation,
-  } = useRecommendationStore();
+  // Supabase hooks
+  const { data: intradayRecommendations = [], isLoading } = useIntradayRecommendations();
+  const addMutation = useAddIntradayRecommendation();
+  const updateMutation = useUpdateIntradayRecommendation();
+  const deleteMutation = useDeleteIntradayRecommendation();
+  const updatePriceMutation = useUpdateIntradayCurrentPrice();
+  const exitMutation = useExitIntradayRecommendation();
 
   // Calculate status for all recommendations and apply filters
   const calculatedRecommendations = useMemo(() => {
@@ -82,8 +87,7 @@ export default function IntradayPage() {
   const hasActiveFilters = statusFilter !== 'open' || dateFilter;
 
   const handleAdd = (data: Omit<IntradayRecommendation, 'id' | 'createdAt' | 'updatedAt'>) => {
-    addIntradayRecommendation(data);
-    toast.success('Recommendation added successfully');
+    addMutation.mutate(data);
   };
 
   const handleEdit = (id: string) => {
@@ -96,17 +100,15 @@ export default function IntradayPage() {
 
   const handleUpdate = (data: Omit<IntradayRecommendation, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (editingRec) {
-      updateIntradayRecommendation(editingRec.id, data);
+      updateMutation.mutate({ id: editingRec.id, ...data });
       setEditingRec(null);
-      toast.success('Recommendation updated successfully');
     }
   };
 
   const handleDelete = () => {
     if (deletingId) {
-      deleteIntradayRecommendation(deletingId);
+      deleteMutation.mutate(deletingId);
       setDeletingId(null);
-      toast.success('Recommendation deleted');
     }
   };
 
@@ -119,9 +121,8 @@ export default function IntradayPage() {
 
   const handlePriceUpdate = (price: number) => {
     if (updatePriceRec) {
-      updateCurrentPrice(updatePriceRec.id, price);
+      updatePriceMutation.mutate({ id: updatePriceRec.id, price });
       setUpdatePriceRec(null);
-      toast.success('Price updated');
     }
   };
 
@@ -134,11 +135,20 @@ export default function IntradayPage() {
 
   const handleExitSubmit = (exitReason: ExitReason, exitPrice?: number) => {
     if (exitRec) {
-      exitRecommendation(exitRec.id, exitReason, exitPrice);
+      exitMutation.mutate({ id: exitRec.id, exitReason, exitPrice });
       setExitRec(null);
-      toast.success('Trade exited successfully');
     }
   };
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>

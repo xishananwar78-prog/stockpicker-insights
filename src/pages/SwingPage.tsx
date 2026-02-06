@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Calendar, X } from 'lucide-react';
+import { Plus, Calendar, X, Loader2 } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { SwingRecommendationCard } from '@/components/SwingRecommendationCard';
 import { SwingRecommendationForm } from '@/components/SwingRecommendationForm';
@@ -15,7 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useRecommendationStore } from '@/store/recommendationStore';
+import {
+  useSwingRecommendations,
+  useAddSwingRecommendation,
+  useUpdateSwingRecommendation,
+  useDeleteSwingRecommendation,
+  useUpdateSwingCurrentPrice,
+  useExitSwingRecommendation,
+} from '@/hooks/useSwingRecommendations';
 import { useAuthContext } from '@/components/AuthContext';
 import { calculateSwingStatus } from '@/lib/swingUtils';
 import { SwingRecommendation, SwingExitReason } from '@/types/recommendation';
@@ -29,7 +36,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
 
 export default function SwingPage() {
   const { isAdmin } = useAuthContext();
@@ -41,14 +47,13 @@ export default function SwingPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('');
 
-  const {
-    swingRecommendations,
-    addSwingRecommendation,
-    updateSwingRecommendation,
-    deleteSwingRecommendation,
-    updateSwingCurrentPrice,
-    exitSwingRecommendation,
-  } = useRecommendationStore();
+  // Supabase hooks
+  const { data: swingRecommendations = [], isLoading } = useSwingRecommendations();
+  const addMutation = useAddSwingRecommendation();
+  const updateMutation = useUpdateSwingRecommendation();
+  const deleteMutation = useDeleteSwingRecommendation();
+  const updatePriceMutation = useUpdateSwingCurrentPrice();
+  const exitMutation = useExitSwingRecommendation();
 
   // Calculate status for all recommendations and apply filters
   const calculatedRecommendations = useMemo(() => {
@@ -82,8 +87,7 @@ export default function SwingPage() {
   const hasActiveFilters = statusFilter !== 'all' || dateFilter;
 
   const handleAdd = (data: Omit<SwingRecommendation, 'id' | 'createdAt' | 'updatedAt'>) => {
-    addSwingRecommendation(data);
-    toast.success('Swing recommendation added successfully');
+    addMutation.mutate(data);
   };
 
   const handleEdit = (id: string) => {
@@ -96,17 +100,15 @@ export default function SwingPage() {
 
   const handleUpdate = (data: Omit<SwingRecommendation, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (editingRec) {
-      updateSwingRecommendation(editingRec.id, data);
+      updateMutation.mutate({ id: editingRec.id, ...data });
       setEditingRec(null);
-      toast.success('Recommendation updated successfully');
     }
   };
 
   const handleDelete = () => {
     if (deletingId) {
-      deleteSwingRecommendation(deletingId);
+      deleteMutation.mutate(deletingId);
       setDeletingId(null);
-      toast.success('Recommendation deleted');
     }
   };
 
@@ -119,9 +121,8 @@ export default function SwingPage() {
 
   const handlePriceUpdate = (price: number) => {
     if (updatePriceRec) {
-      updateSwingCurrentPrice(updatePriceRec.id, price);
+      updatePriceMutation.mutate({ id: updatePriceRec.id, price });
       setUpdatePriceRec(null);
-      toast.success('Price updated');
     }
   };
 
@@ -134,11 +135,20 @@ export default function SwingPage() {
 
   const handleExitSubmit = (exitReason: SwingExitReason, exitPrice?: number) => {
     if (exitRec) {
-      exitSwingRecommendation(exitRec.id, exitReason, exitPrice);
+      exitMutation.mutate({ id: exitRec.id, exitReason, exitPrice });
       setExitRec(null);
-      toast.success('Trade exited successfully');
     }
   };
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
