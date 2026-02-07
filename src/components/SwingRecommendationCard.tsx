@@ -36,6 +36,7 @@ export function SwingRecommendationCard({
     id,
     stockName,
     currentPrice,
+    recommendedPrice,
     imageUrl,
     target1,
     target2,
@@ -135,13 +136,19 @@ export function SwingRecommendationCard({
         </div>
       )}
 
-      {/* Current Price Section */}
+      {/* Price Section */}
       <div className="p-4 bg-secondary/20">
-        <div className="flex items-center justify-between">
+        <div className="grid grid-cols-3 gap-3">
           <div>
             <p className="text-xs text-muted-foreground mb-1">Current Price</p>
-            <p className="font-mono-price text-2xl font-bold text-foreground">
+            <p className="font-mono-price text-lg font-bold text-foreground">
               {formatCurrency(currentPrice)}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Rec. Price</p>
+            <p className="font-mono-price text-lg font-bold text-primary">
+              {formatCurrency(recommendedPrice)}
             </p>
           </div>
           <div className="text-right">

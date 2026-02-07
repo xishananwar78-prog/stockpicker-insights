@@ -106,6 +106,7 @@ export type Database = {
           id: string
           image_url: string | null
           notes: string | null
+          recommended_price: number
           stock_name: string
           stoploss: number
           target1: number
@@ -122,6 +123,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           notes?: string | null
+          recommended_price?: number
           stock_name: string
           stoploss: number
           target1: number
@@ -138,6 +140,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           notes?: string | null
+          recommended_price?: number
           stock_name?: string
           stoploss?: number
           target1?: number

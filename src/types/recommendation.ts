@@ -34,6 +34,7 @@ export interface SwingRecommendation {
   id: string;
   stockName: string;
   currentPrice: number;
+  recommendedPrice: number; // Price at which to enter the trade
   imageUrl?: string; // Optional chart/analysis image
   target1: number;
   target2: number;
