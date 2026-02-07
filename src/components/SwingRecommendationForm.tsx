@@ -18,6 +18,7 @@ import {
 const swingSchema = z.object({
   stockName: z.string().min(1, 'Stock name is required').max(50),
   currentPrice: z.number().positive('Current price must be positive'),
+  recommendedPrice: z.number().positive('Recommended price must be positive'),
   imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   target1: z.number().positive('Target 1 must be positive'),
   target2: z.number().positive('Target 2 must be positive'),
@@ -55,6 +56,7 @@ export function SwingRecommendationForm({
       ? {
           stockName: initialData.stockName,
           currentPrice: initialData.currentPrice,
+          recommendedPrice: initialData.recommendedPrice,
           imageUrl: initialData.imageUrl || '',
           target1: initialData.target1,
           target2: initialData.target2,
@@ -74,6 +76,7 @@ export function SwingRecommendationForm({
       reset({
         stockName: initialData.stockName,
         currentPrice: initialData.currentPrice,
+        recommendedPrice: initialData.recommendedPrice,
         imageUrl: initialData.imageUrl || '',
         target1: initialData.target1,
         target2: initialData.target2,
@@ -92,6 +95,7 @@ export function SwingRecommendationForm({
     onSubmit({
       stockName: data.stockName,
       currentPrice: data.currentPrice,
+      recommendedPrice: data.recommendedPrice,
       imageUrl: data.imageUrl || undefined,
       target1: data.target1,
       target2: data.target2,
@@ -140,6 +144,22 @@ export function SwingRecommendationForm({
             />
             {errors.currentPrice && (
               <p className="text-xs text-loss">{errors.currentPrice.message}</p>
+            )}
+          </div>
+
+          {/* Recommended Price */}
+          <div className="space-y-2">
+            <Label htmlFor="recommendedPrice">Recommended Price (₹)</Label>
+            <Input
+              id="recommendedPrice"
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              className="bg-input border-border font-mono"
+              {...register('recommendedPrice', { valueAsNumber: true })}
+            />
+            {errors.recommendedPrice && (
+              <p className="text-xs text-loss">{errors.recommendedPrice.message}</p>
             )}
           </div>
 

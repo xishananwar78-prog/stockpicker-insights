@@ -8,6 +8,7 @@ interface SwingRecommendationRow {
   id: string;
   stock_name: string;
   current_price: number;
+  recommended_price: number;
   image_url: string | null;
   target1: number;
   target2: number;
@@ -27,6 +28,7 @@ function rowToRecommendation(row: SwingRecommendationRow): SwingRecommendation {
     id: row.id,
     stockName: row.stock_name,
     currentPrice: Number(row.current_price),
+    recommendedPrice: Number(row.recommended_price),
     imageUrl: row.image_url || undefined,
     target1: Number(row.target1),
     target2: Number(row.target2),
@@ -72,6 +74,7 @@ export function useAddSwingRecommendation() {
         .insert({
           stock_name: rec.stockName,
           current_price: rec.currentPrice,
+          recommended_price: rec.recommendedPrice,
           image_url: rec.imageUrl,
           target1: rec.target1,
           target2: rec.target2,
@@ -106,6 +109,7 @@ export function useUpdateSwingRecommendation() {
       
       if (rec.stockName !== undefined) updateData.stock_name = rec.stockName;
       if (rec.currentPrice !== undefined) updateData.current_price = rec.currentPrice;
+      if (rec.recommendedPrice !== undefined) updateData.recommended_price = rec.recommendedPrice;
       if (rec.imageUrl !== undefined) updateData.image_url = rec.imageUrl;
       if (rec.target1 !== undefined) updateData.target1 = rec.target1;
       if (rec.target2 !== undefined) updateData.target2 = rec.target2;

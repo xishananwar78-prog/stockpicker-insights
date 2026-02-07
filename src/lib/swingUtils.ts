@@ -9,7 +9,7 @@ export function calculateSwingStatus(
   rec: SwingRecommendation
 ): CalculatedSwingRecommendation {
   const { 
-    currentPrice,
+    recommendedPrice,
     target1, 
     target2, 
     stoploss,
@@ -17,33 +17,33 @@ export function calculateSwingStatus(
     exitPrice 
   } = rec;
 
-  // Calculate risk/reward based on current price
-  const riskAmount = Math.abs(currentPrice - stoploss);
-  const rewardAmount = Math.abs(target2 - currentPrice);
+  // Calculate risk/reward based on recommended price
+  const riskAmount = Math.abs(recommendedPrice - stoploss);
+  const rewardAmount = Math.abs(target2 - recommendedPrice);
   const riskReward = riskAmount > 0 ? rewardAmount / riskAmount : 0;
 
   // Status is simply: OPEN until admin sets exit, then EXIT
   const status: RecommendationStatus = exitReason ? 'EXIT' : 'OPEN';
 
-  // Calculate actual profit/loss percentage based on exit reason
+  // Calculate actual profit/loss percentage based on exit reason and recommended price
   let profitLoss = 0;
   let profitLossPercent = 0;
   
   if (exitReason && exitReason !== 'NOT_EXECUTED') {
     switch (exitReason) {
       case 'TARGET_1_HIT':
-        profitLossPercent = ((target1 - currentPrice) / currentPrice) * 100;
+        profitLossPercent = ((target1 - recommendedPrice) / recommendedPrice) * 100;
         break;
       case 'TARGET_2_HIT':
-        profitLossPercent = ((target2 - currentPrice) / currentPrice) * 100;
+        profitLossPercent = ((target2 - recommendedPrice) / recommendedPrice) * 100;
         break;
       case 'STOPLOSS_HIT':
-        profitLossPercent = ((stoploss - currentPrice) / currentPrice) * 100;
+        profitLossPercent = ((stoploss - recommendedPrice) / recommendedPrice) * 100;
         break;
       case 'PARTIAL_PROFIT':
       case 'PARTIAL_LOSS':
         if (exitPrice) {
-          profitLossPercent = ((exitPrice - currentPrice) / currentPrice) * 100;
+          profitLossPercent = ((exitPrice - recommendedPrice) / recommendedPrice) * 100;
         }
         break;
     }
