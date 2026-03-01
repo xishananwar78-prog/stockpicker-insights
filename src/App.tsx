@@ -6,8 +6,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/AuthContext";
 import Index from "./pages/Index";
 import IntradayPage from "./pages/IntradayPage";
+import IntradayDetailPage from "./pages/IntradayDetailPage";
 import IntradayReportPage from "./pages/IntradayReportPage";
 import SwingPage from "./pages/SwingPage";
+import SwingDetailPage from "./pages/SwingDetailPage";
 import AdminAuthPage from "./pages/AdminAuthPage";
 import NotFound from "./pages/NotFound";
 
@@ -24,8 +26,10 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/admin" element={<AdminAuthPage />} />
             <Route path="/intraday" element={<IntradayPage />} />
+            <Route path="/intraday/:id" element={<IntradayDetailPage />} />
             <Route path="/intraday-report" element={<IntradayReportPage />} />
             <Route path="/swing" element={<SwingPage />} />
+            <Route path="/swing/:id" element={<SwingDetailPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
