@@ -1,10 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Plus, Calendar, X, Loader2 } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
-import { RecommendationCard } from '@/components/RecommendationCard';
+import { IntradayCompactCard } from '@/components/IntradayCompactCard';
 import { RecommendationForm } from '@/components/RecommendationForm';
-import { UpdatePriceDialog } from '@/components/UpdatePriceDialog';
-import { ExitRuleDialog } from '@/components/ExitRuleDialog';
 import { UpstoxBanner } from '@/components/UpstoxBanner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,58 +16,30 @@ import {
 import {
   useIntradayRecommendations,
   useAddIntradayRecommendation,
-  useUpdateIntradayRecommendation,
-  useDeleteIntradayRecommendation,
-  useUpdateIntradayCurrentPrice,
-  useExitIntradayRecommendation,
 } from '@/hooks/useIntradayRecommendations';
 import { useAuthContext } from '@/components/AuthContext';
 import { calculateRecommendationStatus } from '@/lib/recommendationUtils';
-import { IntradayRecommendation, ExitReason } from '@/types/recommendation';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { IntradayRecommendation } from '@/types/recommendation';
 
 export default function IntradayPage() {
   const { isAdmin } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingRec, setEditingRec] = useState<IntradayRecommendation | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [updatePriceRec, setUpdatePriceRec] = useState<IntradayRecommendation | null>(null);
-  const [exitRec, setExitRec] = useState<IntradayRecommendation | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('open');
   const [dateFilter, setDateFilter] = useState<string>('');
 
-  // Supabase hooks
   const { data: intradayRecommendations = [], isLoading } = useIntradayRecommendations();
   const addMutation = useAddIntradayRecommendation();
-  const updateMutation = useUpdateIntradayRecommendation();
-  const deleteMutation = useDeleteIntradayRecommendation();
-  const updatePriceMutation = useUpdateIntradayCurrentPrice();
-  const exitMutation = useExitIntradayRecommendation();
 
-  // Calculate status for all recommendations and apply filters
   const calculatedRecommendations = useMemo(() => {
     return intradayRecommendations
       .map((rec) => calculateRecommendationStatus(rec))
       .filter((rec) => {
-        // Status filter
         if (statusFilter === 'open' && rec.status !== 'OPEN') return false;
         if (statusFilter === 'exit' && rec.status !== 'EXIT') return false;
-        
-        // Date filter
         if (dateFilter) {
           const recDate = new Date(rec.createdAt).toISOString().split('T')[0];
           if (recDate !== dateFilter) return false;
         }
-        
         return true;
       })
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -78,7 +48,7 @@ export default function IntradayPage() {
   const openCount = intradayRecommendations
     .map((rec) => calculateRecommendationStatus(rec))
     .filter((rec) => rec.status === 'OPEN').length;
-  
+
   const clearFilters = () => {
     setStatusFilter('open');
     setDateFilter('');
@@ -88,56 +58,6 @@ export default function IntradayPage() {
 
   const handleAdd = (data: Omit<IntradayRecommendation, 'id' | 'createdAt' | 'updatedAt'>) => {
     addMutation.mutate(data);
-  };
-
-  const handleEdit = (id: string) => {
-    const rec = intradayRecommendations.find((r) => r.id === id);
-    if (rec) {
-      setEditingRec(rec);
-      setIsFormOpen(true);
-    }
-  };
-
-  const handleUpdate = (data: Omit<IntradayRecommendation, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (editingRec) {
-      updateMutation.mutate({ id: editingRec.id, ...data });
-      setEditingRec(null);
-    }
-  };
-
-  const handleDelete = () => {
-    if (deletingId) {
-      deleteMutation.mutate(deletingId);
-      setDeletingId(null);
-    }
-  };
-
-  const handleUpdatePrice = (id: string) => {
-    const rec = intradayRecommendations.find((r) => r.id === id);
-    if (rec) {
-      setUpdatePriceRec(rec);
-    }
-  };
-
-  const handlePriceUpdate = (price: number) => {
-    if (updatePriceRec) {
-      updatePriceMutation.mutate({ id: updatePriceRec.id, price });
-      setUpdatePriceRec(null);
-    }
-  };
-
-  const handleExit = (id: string) => {
-    const rec = intradayRecommendations.find((r) => r.id === id);
-    if (rec) {
-      setExitRec(rec);
-    }
-  };
-
-  const handleExitSubmit = (exitReason: ExitReason, exitPrice?: number) => {
-    if (exitRec) {
-      exitMutation.mutate({ id: exitRec.id, exitReason, exitPrice });
-      setExitRec(null);
-    }
   };
 
   if (isLoading) {
@@ -160,10 +80,7 @@ export default function IntradayPage() {
           </div>
           {isAdmin && (
             <Button
-              onClick={() => {
-                setEditingRec(null);
-                setIsFormOpen(true);
-              }}
+              onClick={() => setIsFormOpen(true)}
               className="bg-gradient-brand text-primary-foreground hover:opacity-90 shadow-glow-brand"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -172,7 +89,6 @@ export default function IntradayPage() {
           )}
         </div>
 
-        {/* Upstox Banner */}
         <UpstoxBanner />
 
         {/* Stats */}
@@ -205,104 +121,37 @@ export default function IntradayPage() {
           </div>
 
           {hasActiveFilters && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={clearFilters}
-              className="shrink-0"
-            >
+            <Button variant="outline" size="icon" onClick={clearFilters} className="shrink-0">
               <X className="h-4 w-4" />
             </Button>
           )}
         </div>
 
-        {/* Recommendations List */}
-        <div className="space-y-4">
+        {/* Compact Recommendations List */}
+        <div className="space-y-2">
           {calculatedRecommendations.length === 0 ? (
             <div className="text-center py-12 bg-card rounded-xl border border-border">
               <p className="text-muted-foreground">No recommendations found</p>
               {isAdmin && (
-                <Button
-                  onClick={() => setIsFormOpen(true)}
-                  variant="link"
-                  className="text-primary mt-2"
-                >
+                <Button onClick={() => setIsFormOpen(true)} variant="link" className="text-primary mt-2">
                   Add your first recommendation
                 </Button>
               )}
             </div>
           ) : (
             calculatedRecommendations.map((rec) => (
-              <RecommendationCard
-                key={rec.id}
-                recommendation={rec}
-                onEdit={handleEdit}
-                onDelete={(id) => setDeletingId(id)}
-                onExit={handleExit}
-                onUpdatePrice={handleUpdatePrice}
-              />
+              <IntradayCompactCard key={rec.id} recommendation={rec} />
             ))
           )}
         </div>
       </div>
 
-      {/* Add/Edit Form */}
       <RecommendationForm
         open={isFormOpen}
-        onOpenChange={(open) => {
-          setIsFormOpen(open);
-          if (!open) setEditingRec(null);
-        }}
-        onSubmit={editingRec ? handleUpdate : handleAdd}
-        initialData={editingRec || undefined}
-        mode={editingRec ? 'edit' : 'add'}
+        onOpenChange={setIsFormOpen}
+        onSubmit={handleAdd}
+        mode="add"
       />
-
-      {/* Update Price Dialog */}
-      {updatePriceRec && (
-        <UpdatePriceDialog
-          open={!!updatePriceRec}
-          onOpenChange={(open) => !open && setUpdatePriceRec(null)}
-          onSubmit={handlePriceUpdate}
-          stockName={updatePriceRec.stockName}
-          currentPrice={updatePriceRec.currentPrice}
-        />
-      )}
-
-      {/* Exit Rule Dialog */}
-      {exitRec && (
-        <ExitRuleDialog
-          open={!!exitRec}
-          onOpenChange={(open) => !open && setExitRec(null)}
-          onSubmit={handleExitSubmit}
-          stockName={exitRec.stockName}
-          target1={exitRec.target1}
-          target2={exitRec.target2}
-          target3={exitRec.target3}
-          stoploss={exitRec.stoploss}
-        />
-      )}
-
-      {/* Delete Confirmation */}
-      <AlertDialog open={!!deletingId} onOpenChange={(open) => !open && setDeletingId(null)}>
-        <AlertDialogContent className="bg-card border-border">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Recommendation</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this recommendation? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-loss hover:bg-loss/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </AdminLayout>
   );
 }
