@@ -128,7 +128,7 @@ export default function IntradayPage() {
         </div>
 
         {/* Compact Recommendations List */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           {calculatedRecommendations.length === 0 ? (
             <div className="text-center py-12 bg-card rounded-xl border border-border">
               <p className="text-muted-foreground">No recommendations found</p>
