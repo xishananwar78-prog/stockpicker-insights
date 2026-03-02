@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
 import { CalculatedSwingRecommendation } from '@/types/recommendation';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/recommendationUtils';
@@ -54,7 +53,6 @@ export function SwingCompactCard({ recommendation }: SwingCompactCardProps) {
                 Swing
               </span>
               <StatusBadge status={status} exitReason={exitReason as any} exitPrice={exitPrice} />
-              <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
           </div>
 
@@ -108,6 +106,12 @@ export function SwingCompactCard({ recommendation }: SwingCompactCardProps) {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Footer: View Details */}
+        <div className="border-t border-border/50 px-4 py-2 flex items-center justify-center gap-1.5 group-hover:bg-primary/5 transition-colors">
+          <span className="text-xs font-semibold text-primary tracking-wide">View all details</span>
+          <span className="text-primary text-xs">→</span>
         </div>
       </div>
     </Link>

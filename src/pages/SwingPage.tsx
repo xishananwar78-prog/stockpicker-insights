@@ -96,13 +96,13 @@ export default function SwingPage() {
         <UpstoxBanner />
 
         {/* Toggle Tabs */}
-        <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl w-fit">
+        <div className="grid grid-cols-3 gap-1 bg-muted/50 p-1 rounded-xl">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                'px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200',
+                'px-3 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 text-center',
                 activeTab === tab.key
                   ? 'bg-primary text-primary-foreground shadow-md'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
