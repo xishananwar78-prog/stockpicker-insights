@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
 import { CalculatedRecommendation } from '@/types/recommendation';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/recommendationUtils';
@@ -55,7 +54,6 @@ export function IntradayCompactCard({ recommendation }: IntradayCompactCardProps
             <div className="flex items-center gap-1.5 shrink-0">
               <TradeSideBadge side={tradeSide} />
               <StatusBadge status={status} exitReason={exitReason} exitPrice={exitPrice} />
-              <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
           </div>
 
@@ -109,6 +107,12 @@ export function IntradayCompactCard({ recommendation }: IntradayCompactCardProps
               </div>
             </div>
           )}
+        </div>
+
+        {/* Footer: View Details */}
+        <div className="border-t border-border/50 px-4 py-2 flex items-center justify-center gap-1.5 group-hover:bg-primary/5 transition-colors">
+          <span className="text-xs font-semibold text-primary tracking-wide">View all details</span>
+          <span className="text-primary text-xs">→</span>
         </div>
       </div>
     </Link>
