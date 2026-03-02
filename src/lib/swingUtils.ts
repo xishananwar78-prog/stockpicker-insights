@@ -17,9 +17,12 @@ export function calculateSwingStatus(
     exitPrice 
   } = rec;
 
-  // Calculate risk/reward based on recommended price
-  const riskAmount = Math.abs(recommendedPrice - stoploss);
-  const rewardAmount = Math.abs(target2 - recommendedPrice);
+  // Fallback to currentPrice if recommendedPrice is 0 or missing
+  const entryPrice = recommendedPrice || rec.currentPrice;
+
+  // Calculate risk/reward based on entry price
+  const riskAmount = Math.abs(entryPrice - stoploss);
+  const rewardAmount = Math.abs(target2 - entryPrice);
   const riskReward = riskAmount > 0 ? rewardAmount / riskAmount : 0;
 
   // Status is simply: OPEN until admin sets exit, then EXIT
