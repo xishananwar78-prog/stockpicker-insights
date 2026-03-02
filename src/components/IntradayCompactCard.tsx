@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/recommendationUtils';
 import { StatusBadge } from './StatusBadge';
 import { TradeSideBadge } from './TradeSideBadge';
-import { Card } from '@/components/ui/card';
 
 interface IntradayCompactCardProps {
   recommendation: CalculatedRecommendation;
@@ -35,31 +34,43 @@ export function IntradayCompactCard({ recommendation }: IntradayCompactCardProps
   const isProfit = profitLoss > 0;
 
   return (
-    <Link to={`/intraday/${id}`}>
-      <Card className="bg-gradient-card border-border overflow-hidden hover:border-primary/40 transition-colors cursor-pointer">
-        <div className="p-3 sm:p-4 space-y-2">
+    <Link to={`/intraday/${id}`} className="block">
+      <div className="relative bg-gradient-card border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 group">
+        {/* Left accent bar */}
+        <div className={cn(
+          'absolute left-0 top-0 bottom-0 w-1 rounded-l-xl',
+          isExited
+            ? exitReason === 'NOT_EXECUTED'
+              ? 'bg-muted-foreground/40'
+              : isProfit ? 'bg-profit' : 'bg-loss'
+            : 'bg-open'
+        )} />
+
+        <div className="pl-4 pr-3 py-3.5 sm:pl-5 sm:pr-4 sm:py-4 space-y-3">
           {/* Row 1: Stock name + badges */}
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-base sm:text-lg font-bold text-foreground truncate">{stockName}</h3>
+            <h3 className="text-base sm:text-lg font-extrabold text-foreground tracking-tight truncate">
+              {stockName}
+            </h3>
             <div className="flex items-center gap-1.5 shrink-0">
               <TradeSideBadge side={tradeSide} />
               <StatusBadge status={status} exitReason={exitReason} exitPrice={exitPrice} />
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
           </div>
 
-          {/* Row 2: Price + Profit + Risk */}
+          {/* Row 2: Metrics */}
           {isExited && exitReason !== 'NOT_EXECUTED' ? (
-            <div className="flex items-end justify-between gap-2">
+            <div className="flex items-end justify-between gap-3">
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Price</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Price</p>
                 <p className="font-mono-price text-base font-bold text-foreground">{formatCurrency(currentPrice)}</p>
               </div>
               <div className={cn(
-                'text-center px-3 py-1 rounded-lg',
-                isProfit ? 'bg-profit-muted' : 'bg-loss-muted'
+                'px-4 py-1.5 rounded-lg',
+                isProfit ? 'bg-profit/10 border border-profit/20' : 'bg-loss/10 border border-loss/20'
               )}>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">P&L</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium text-center">P&L</p>
                 <p className={cn(
                   'font-mono-price text-sm font-bold',
                   isProfit ? 'text-profit' : 'text-loss'
@@ -69,29 +80,29 @@ export function IntradayCompactCard({ recommendation }: IntradayCompactCardProps
               </div>
             </div>
           ) : isExited && exitReason === 'NOT_EXECUTED' ? (
-            <div className="flex items-end justify-between gap-2">
+            <div className="flex items-end justify-between gap-3">
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Price</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Price</p>
                 <p className="font-mono-price text-base font-bold text-foreground">{formatCurrency(currentPrice)}</p>
               </div>
-              <div className="text-center px-3 py-1 rounded-lg bg-muted">
+              <div className="px-4 py-1.5 rounded-lg bg-muted border border-border">
                 <p className="text-xs font-medium text-muted-foreground">Not Executed</p>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-3">
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Price</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Price</p>
                 <p className="font-mono-price text-sm sm:text-base font-bold text-foreground">{formatCurrency(currentPrice)}</p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Profit</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Potential</p>
                 <p className="font-mono-price text-sm sm:text-base font-bold text-profit">
                   {potentialProfit.toFixed(1)}%
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Risk</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Risk</p>
                 <p className="font-mono-price text-sm sm:text-base font-bold text-loss">
                   {potentialRisk.toFixed(1)}%
                 </p>
@@ -99,7 +110,7 @@ export function IntradayCompactCard({ recommendation }: IntradayCompactCardProps
             </div>
           )}
         </div>
-      </Card>
+      </div>
     </Link>
   );
 }

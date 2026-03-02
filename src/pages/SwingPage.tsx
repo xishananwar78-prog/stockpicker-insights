@@ -7,58 +7,64 @@ import { UpstoxBanner } from '@/components/UpstoxBanner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   useSwingRecommendations,
   useAddSwingRecommendation,
 } from '@/hooks/useSwingRecommendations';
 import { useAuthContext } from '@/components/AuthContext';
 import { calculateSwingStatus } from '@/lib/swingUtils';
 import { SwingRecommendation } from '@/types/recommendation';
+import { cn } from '@/lib/utils';
+
+type FilterTab = 'all' | 'open' | 'exit';
 
 export default function SwingPage() {
   const { isAdmin } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<FilterTab>('all');
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
 
   const { data: swingRecommendations = [], isLoading } = useSwingRecommendations();
   const addMutation = useAddSwingRecommendation();
 
+  const allCalculated = useMemo(() => {
+    return swingRecommendations.map((rec) => calculateSwingStatus(rec));
+  }, [swingRecommendations]);
+
+  const openCount = allCalculated.filter((r) => r.status === 'OPEN').length;
+  const exitCount = allCalculated.filter((r) => r.status === 'EXIT').length;
+
   const calculatedRecommendations = useMemo(() => {
-    return swingRecommendations
-      .map((rec) => calculateSwingStatus(rec))
+    return allCalculated
       .filter((rec) => {
-        if (statusFilter === 'open' && rec.status !== 'OPEN') return false;
-        if (statusFilter === 'exit' && rec.status !== 'EXIT') return false;
-        if (dateFilter) {
+        if (activeTab === 'open' && rec.status !== 'OPEN') return false;
+        if (activeTab === 'exit' && rec.status !== 'EXIT') return false;
+        if (dateFrom || dateTo) {
           const recDate = new Date(rec.createdAt).toISOString().split('T')[0];
-          if (recDate !== dateFilter) return false;
+          if (dateFrom && recDate < dateFrom) return false;
+          if (dateTo && recDate > dateTo) return false;
         }
         return true;
       })
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [swingRecommendations, statusFilter, dateFilter]);
+  }, [allCalculated, activeTab, dateFrom, dateTo]);
 
-  const openCount = swingRecommendations
-    .map((rec) => calculateSwingStatus(rec))
-    .filter((rec) => rec.status === 'OPEN').length;
-
-  const clearFilters = () => {
-    setStatusFilter('all');
-    setDateFilter('');
+  const clearDates = () => {
+    setDateFrom('');
+    setDateTo('');
   };
 
-  const hasActiveFilters = statusFilter !== 'all' || dateFilter;
+  const hasDates = dateFrom || dateTo;
 
   const handleAdd = (data: Omit<SwingRecommendation, 'id' | 'createdAt' | 'updatedAt'>) => {
     addMutation.mutate(data);
   };
+
+  const tabs: { key: FilterTab; label: string; count?: number }[] = [
+    { key: 'open', label: 'Open', count: openCount },
+    { key: 'exit', label: 'Exited', count: exitCount },
+    { key: 'all', label: 'All', count: allCalculated.length },
+  ];
 
   if (isLoading) {
     return (
@@ -72,12 +78,10 @@ export default function SwingPage() {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-5">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Swing Recommendations</h1>
-          </div>
+          <h1 className="text-2xl font-bold text-foreground">Swing Recommendations</h1>
           {isAdmin && (
             <Button
               onClick={() => setIsFormOpen(true)}
@@ -91,44 +95,64 @@ export default function SwingPage() {
 
         <UpstoxBanner />
 
-        {/* Stats */}
-        <div className="bg-open-muted rounded-xl p-4 border border-open/20 max-w-xs">
-          <p className="text-2xl font-bold text-open font-mono">{openCount}</p>
-          <p className="text-xs text-open/80 uppercase tracking-wider">Open Recommendations</p>
+        {/* Toggle Tabs */}
+        <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl w-fit">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={cn(
+                'px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200',
+                activeTab === tab.key
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              )}
+            >
+              {tab.label}
+              {tab.count !== undefined && (
+                <span className={cn(
+                  'ml-1.5 text-xs font-mono',
+                  activeTab === tab.key ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                )}>
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-row items-center gap-3">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-32 bg-input border-border">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="open">Open</SelectItem>
-              <SelectItem value="exit">Exited</SelectItem>
-            </SelectContent>
-          </Select>
-
+        {/* Date Range */}
+        <div className="flex flex-row items-center gap-2 flex-wrap">
           <div className="relative">
             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
               type="date"
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-              className="pl-10 bg-input border-border w-44"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              placeholder="From"
+              className="pl-10 bg-input border-border w-40 text-sm"
             />
           </div>
-
-          {hasActiveFilters && (
-            <Button variant="outline" size="icon" onClick={clearFilters} className="shrink-0">
+          <span className="text-muted-foreground text-sm">to</span>
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              placeholder="To"
+              className="pl-10 bg-input border-border w-40 text-sm"
+            />
+          </div>
+          {hasDates && (
+            <Button variant="outline" size="icon" onClick={clearDates} className="shrink-0 h-9 w-9">
               <X className="h-4 w-4" />
             </Button>
           )}
         </div>
 
-        {/* Compact Recommendations List */}
-        <div className="space-y-3">
+        {/* Recommendations List */}
+        <div className="flex flex-col gap-3">
           {calculatedRecommendations.length === 0 ? (
             <div className="text-center py-12 bg-card rounded-xl border border-border">
               <p className="text-muted-foreground">No swing recommendations found</p>
