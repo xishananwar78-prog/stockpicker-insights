@@ -8,13 +8,16 @@ import {
   FileText,
   Menu,
   LogOut,
-  User
+  User,
+  ExternalLink
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAuthContext } from '@/components/AuthContext';
+import { useCustomMenuItems } from '@/hooks/useCustomMenuItems';
+import { ManageMenuDialog } from '@/components/ManageMenuDialog';
 import { toast } from 'sonner';
 
 interface AdminLayoutProps {
@@ -35,7 +38,8 @@ function NavItem({
   icon: Icon, 
   isActive, 
   disabled,
-  onClick 
+  onClick,
+  isExternal,
 }: { 
   href: string; 
   label: string; 
@@ -43,6 +47,7 @@ function NavItem({
   isActive: boolean;
   disabled?: boolean;
   onClick?: () => void;
+  isExternal?: boolean;
 }) {
   if (disabled) {
     return (
@@ -51,6 +56,22 @@ function NavItem({
         <span className="text-sm font-medium">{label}</span>
         <span className="ml-auto text-xs bg-muted px-2 py-0.5 rounded">Soon</span>
       </div>
+    );
+  }
+
+  if (isExternal) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onClick}
+        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-accent"
+      >
+        <Icon className="h-5 w-5" />
+        <span className="text-sm font-medium">{label}</span>
+        <ExternalLink className="h-3 w-3 ml-auto opacity-50" />
+      </a>
     );
   }
 
@@ -111,7 +132,33 @@ function BottomNav() {
   );
 }
 
-function Sidebar() {
+function CustomMenuItems({ onClick }: { onClick?: () => void }) {
+  const { data: customItems = [] } = useCustomMenuItems();
+  
+  if (customItems.length === 0) return null;
+
+  return (
+    <div className="space-y-1">
+      <p className="px-4 text-[10px] text-muted-foreground uppercase tracking-widest font-medium mb-1">Links</p>
+      {customItems.map((item) => {
+        const isExternal = item.url.startsWith('http');
+        return (
+          <NavItem
+            key={item.id}
+            href={item.url}
+            label={item.label}
+            icon={ExternalLink}
+            isActive={false}
+            onClick={onClick}
+            isExternal={isExternal}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function SidebarComponent() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAdmin, signOut } = useAuthContext();
@@ -132,7 +179,7 @@ function Sidebar() {
         <Logo />
       </div>
       
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => (
           <NavItem
             key={item.href}
@@ -143,6 +190,16 @@ function Sidebar() {
             disabled={item.disabled}
           />
         ))}
+
+        <div className="pt-3">
+          <CustomMenuItems />
+        </div>
+
+        {isAdmin && (
+          <div className="pt-2">
+            <ManageMenuDialog />
+          </div>
+        )}
       </nav>
 
       <div className="p-4 border-t border-sidebar-border space-y-3">
@@ -213,7 +270,7 @@ function MobileHeader() {
             <div className="p-6 border-b border-sidebar-border">
               <Logo />
             </div>
-            <nav className="p-4 space-y-1">
+            <nav className="p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-200px)]">
               {navItems.map((item) => (
                 <NavItem
                   key={item.href}
@@ -225,6 +282,16 @@ function MobileHeader() {
                   onClick={() => setIsOpen(false)}
                 />
               ))}
+
+              <div className="pt-3">
+                <CustomMenuItems onClick={() => setIsOpen(false)} />
+              </div>
+
+              {isAdmin && (
+                <div className="pt-2">
+                  <ManageMenuDialog />
+                </div>
+              )}
             </nav>
             
             <div className="p-4 border-t border-sidebar-border space-y-3">
@@ -262,7 +329,7 @@ function MobileHeader() {
 export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar />
+      <SidebarComponent />
       <MobileHeader />
       
       <main className="md:ml-64 min-h-screen pt-16 pb-20 md:pt-0 md:pb-0">
