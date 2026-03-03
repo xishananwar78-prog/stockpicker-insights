@@ -7,6 +7,7 @@ import { RecommendationForm } from '@/components/RecommendationForm';
 import { UpdatePriceDialog } from '@/components/UpdatePriceDialog';
 import { ExitRuleDialog } from '@/components/ExitRuleDialog';
 import { Button } from '@/components/ui/button';
+import { UpstoxBanner } from '@/components/UpstoxBanner';
 import {
   useIntradayRecommendations,
   useUpdateIntradayRecommendation,
@@ -95,6 +96,8 @@ export default function IntradayDetailPage() {
         <Button variant="ghost" onClick={() => navigate('/intraday')} className="mb-2">
           <ArrowLeft className="h-4 w-4 mr-2" /> Back to Intraday
         </Button>
+
+        <UpstoxBanner />
 
         <RecommendationCard
           recommendation={recommendation}

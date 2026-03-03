@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Plus, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useCustomMenuItems, useAddCustomMenuItem, useDeleteCustomMenuItem } from '@/hooks/useCustomMenuItems';
+import { IconPicker, getIconComponent } from '@/components/IconPicker';
 import { toast } from 'sonner';
 
 export function ManageMenuDialog() {
@@ -62,7 +64,7 @@ export function ManageMenuDialog() {
               {items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between gap-2 p-2 bg-muted rounded-lg">
                   <div className="flex items-center gap-2 min-w-0">
-                    <ExternalLink className="h-4 w-4 text-muted-foreground shrink-0" />
+                    {(() => { const Ic = getIconComponent(item.icon); return <Ic className="h-4 w-4 text-muted-foreground shrink-0" />; })()}
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{item.label}</p>
                       <p className="text-[10px] text-muted-foreground truncate">{item.url}</p>
@@ -96,6 +98,10 @@ export function ManageMenuDialog() {
               onChange={(e) => setUrl(e.target.value)}
               className="bg-input"
             />
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Icon</Label>
+              <IconPicker value={icon} onChange={setIcon} />
+            </div>
             <Button onClick={handleAdd} disabled={addMutation.isPending} className="w-full bg-gradient-brand text-primary-foreground">
               <Plus className="h-4 w-4 mr-2" />
               Add Menu Item

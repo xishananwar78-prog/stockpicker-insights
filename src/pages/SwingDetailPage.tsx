@@ -7,6 +7,7 @@ import { SwingRecommendationForm } from '@/components/SwingRecommendationForm';
 import { UpdatePriceDialog } from '@/components/UpdatePriceDialog';
 import { SwingExitDialog } from '@/components/SwingExitDialog';
 import { Button } from '@/components/ui/button';
+import { UpstoxBanner } from '@/components/UpstoxBanner';
 import {
   useSwingRecommendations,
   useUpdateSwingRecommendation,
@@ -95,6 +96,8 @@ export default function SwingDetailPage() {
         <Button variant="ghost" onClick={() => navigate('/swing')} className="mb-2">
           <ArrowLeft className="h-4 w-4 mr-2" /> Back to Swing
         </Button>
+
+        <UpstoxBanner />
 
         <SwingRecommendationCard
           recommendation={recommendation}
