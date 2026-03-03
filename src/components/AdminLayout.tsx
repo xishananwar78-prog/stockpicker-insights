@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAuthContext } from '@/components/AuthContext';
 import { useCustomMenuItems } from '@/hooks/useCustomMenuItems';
+import { getIconComponent } from '@/components/IconPicker';
 import { ManageMenuDialog } from '@/components/ManageMenuDialog';
 import { toast } from 'sonner';
 
@@ -29,6 +30,7 @@ const navItems = [
   { href: '/intraday', label: 'Intraday', icon: Zap },
   { href: '/intraday-report', label: 'Daily Report', icon: FileText },
   { href: '/swing', label: 'Swing', icon: TrendingUp },
+  { href: '/blog', label: 'Blog', icon: FileText },
   { href: '/breakout', label: 'Breakout', icon: BarChart3, disabled: true },
 ];
 
@@ -98,7 +100,7 @@ function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden">
       <div className="flex items-center justify-around py-2">
-        {navItems.slice(0, 4).map((item) => {
+        {navItems.filter(i => !i.disabled).slice(0, 5).map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
           
@@ -142,12 +144,13 @@ function CustomMenuItems({ onClick }: { onClick?: () => void }) {
       <p className="px-4 text-[10px] text-muted-foreground uppercase tracking-widest font-medium mb-1">Links</p>
       {customItems.map((item) => {
         const isExternal = item.url.startsWith('http');
+        const IconComp = getIconComponent(item.icon);
         return (
           <NavItem
             key={item.id}
             href={item.url}
             label={item.label}
-            icon={ExternalLink}
+            icon={IconComp}
             isActive={false}
             onClick={onClick}
             isExternal={isExternal}

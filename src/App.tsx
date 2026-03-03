@@ -11,6 +11,9 @@ import IntradayReportPage from "./pages/IntradayReportPage";
 import SwingPage from "./pages/SwingPage";
 import SwingDetailPage from "./pages/SwingDetailPage";
 import AdminAuthPage from "./pages/AdminAuthPage";
+import BlogPage from "./pages/BlogPage";
+import BlogPostPage from "./pages/BlogPostPage";
+import BlogEditorPage from "./pages/BlogEditorPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +33,10 @@ const App = () => (
             <Route path="/intraday-report" element={<IntradayReportPage />} />
             <Route path="/swing" element={<SwingPage />} />
             <Route path="/swing/:id" element={<SwingDetailPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/new" element={<BlogEditorPage />} />
+            <Route path="/blog/:slug/edit" element={<BlogEditorPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
