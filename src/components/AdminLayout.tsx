@@ -19,6 +19,7 @@ import { useAuthContext } from '@/components/AuthContext';
 import { useCustomMenuItems } from '@/hooks/useCustomMenuItems';
 import { getIconComponent } from '@/components/IconPicker';
 import { ManageMenuDialog } from '@/components/ManageMenuDialog';
+import { ManagePopupDialog } from '@/components/ManagePopupDialog';
 import { toast } from 'sonner';
 
 interface AdminLayoutProps {
@@ -199,8 +200,9 @@ function SidebarComponent() {
         </div>
 
         {isAdmin && (
-          <div className="pt-2">
+          <div className="pt-2 space-y-1">
             <ManageMenuDialog />
+            <ManagePopupDialog />
           </div>
         )}
       </nav>
@@ -291,8 +293,9 @@ function MobileHeader() {
               </div>
 
               {isAdmin && (
-                <div className="pt-2">
+                <div className="pt-2 space-y-1">
                   <ManageMenuDialog />
+                  <ManagePopupDialog />
                 </div>
               )}
             </nav>

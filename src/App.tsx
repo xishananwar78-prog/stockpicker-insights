@@ -15,6 +15,7 @@ import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import BlogEditorPage from "./pages/BlogEditorPage";
 import NotFound from "./pages/NotFound";
+import { AdminPopupViewer } from "@/components/AdminPopupViewer";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
         <Toaster />
         <Sonner position="top-center" theme="dark" />
         <BrowserRouter>
+          <AdminPopupViewer />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/admin" element={<AdminAuthPage />} />
