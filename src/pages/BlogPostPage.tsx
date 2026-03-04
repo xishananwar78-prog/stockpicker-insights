@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2, Loader2 } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
+import { UpstoxBanner } from '@/components/UpstoxBanner';
 import { Button } from '@/components/ui/button';
 import { useBlogPost, useDeleteBlogPost } from '@/hooks/useBlogPosts';
 import { useAuthContext } from '@/components/AuthContext';
@@ -11,7 +12,18 @@ import {
   AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+
+function insertBannerAfterFirstParagraph(html: string) {
+  // Find the end of the first <p>...</p> block
+  const firstPClose = html.indexOf('</p>');
+  if (firstPClose === -1) return { before: html, after: '' };
+  const splitIndex = firstPClose + 4;
+  return {
+    before: html.substring(0, splitIndex),
+    after: html.substring(splitIndex),
+  };
+}
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -20,6 +32,11 @@ export default function BlogPostPage() {
   const { data: post, isLoading } = useBlogPost(slug || '');
   const deleteMutation = useDeleteBlogPost();
   const [showDelete, setShowDelete] = useState(false);
+
+  const contentParts = useMemo(() => {
+    if (!post?.content) return null;
+    return insertBannerAfterFirstParagraph(post.content);
+  }, [post?.content]);
 
   if (isLoading) {
     return (
@@ -96,10 +113,23 @@ export default function BlogPostPage() {
           )}
         </div>
 
-        <div
-          className="prose prose-invert max-w-none [&_img]:rounded-lg [&_img]:max-w-full [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:italic [&_a]:text-primary [&_a]:underline"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        {/* Content with Upstox banner after first paragraph */}
+        {contentParts && (
+          <>
+            <div
+              className="prose prose-invert max-w-none [&_img]:rounded-lg [&_img]:max-w-full [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:italic [&_a]:text-primary [&_a]:underline"
+              dangerouslySetInnerHTML={{ __html: contentParts.before }}
+            />
+            <UpstoxBanner />
+            <div
+              className="prose prose-invert max-w-none [&_img]:rounded-lg [&_img]:max-w-full [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:italic [&_a]:text-primary [&_a]:underline"
+              dangerouslySetInnerHTML={{ __html: contentParts.after }}
+            />
+          </>
+        )}
+
+        {/* Upstox banner at end */}
+        <UpstoxBanner />
       </article>
 
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>

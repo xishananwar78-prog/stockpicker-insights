@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_popups: {
+        Row: {
+          content: string
+          created_at: string
+          cta_text: string | null
+          cta_url: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          cta_text?: string | null
+          cta_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          cta_text?: string | null
+          cta_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author_id: string | null

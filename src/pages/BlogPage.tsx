@@ -11,6 +11,9 @@ export default function BlogPage() {
   const { isAdmin } = useAuthContext();
   const { data: posts = [], isLoading } = useBlogPosts(isAdmin);
 
+  // Show only recent 10 posts
+  const recentPosts = posts.slice(0, 10);
+
   if (isLoading) {
     return (
       <AdminLayout>
@@ -38,28 +41,32 @@ export default function BlogPage() {
 
         <UpstoxBanner />
 
-        {posts.length === 0 ? (
+        {recentPosts.length === 0 ? (
           <div className="text-center py-12 bg-card rounded-xl border border-border">
             <p className="text-muted-foreground">No blog posts yet</p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {posts.map((post) => (
+          <div className="space-y-3">
+            {recentPosts.map((post) => (
               <Link
                 key={post.id}
                 to={`/blog/${post.slug}`}
-                className="group bg-card rounded-xl border border-border overflow-hidden hover:border-primary/40 transition-all duration-200"
+                className="group flex gap-4 bg-card rounded-xl border border-border overflow-hidden hover:border-primary/40 transition-all duration-200 p-3"
               >
-                {post.thumbnail_url && (
-                  <div className="aspect-video overflow-hidden">
+                {post.thumbnail_url ? (
+                  <div className="shrink-0 w-28 h-20 sm:w-36 sm:h-24 rounded-lg overflow-hidden">
                     <img
                       src={post.thumbnail_url}
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
+                ) : (
+                  <div className="shrink-0 w-28 h-20 sm:w-36 sm:h-24 rounded-lg bg-muted flex items-center justify-center">
+                    <span className="text-2xl text-muted-foreground">📝</span>
+                  </div>
                 )}
-                <div className="p-4 space-y-2">
+                <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
                   <div className="flex items-center gap-2">
                     {!post.is_published && (
                       <span className="text-[10px] bg-warning-muted text-warning px-2 py-0.5 rounded font-medium uppercase">Draft</span>
@@ -68,9 +75,9 @@ export default function BlogPage() {
                       {format(new Date(post.created_at), 'MMM d, yyyy')}
                     </span>
                   </div>
-                  <h2 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">{post.title}</h2>
+                  <h2 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">{post.title}</h2>
                   {post.subtitle && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">{post.subtitle}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-1">{post.subtitle}</p>
                   )}
                 </div>
               </Link>
