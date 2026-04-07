@@ -117,12 +117,12 @@ export default function BlogPostPage() {
         {contentParts && (
           <>
             <div
-              className="prose prose-invert max-w-none [&_img]:rounded-lg [&_img]:max-w-full [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:italic [&_a]:text-primary [&_a]:underline"
+              className="blog-content"
               dangerouslySetInnerHTML={{ __html: contentParts.before }}
             />
             <UpstoxBanner />
             <div
-              className="prose prose-invert max-w-none [&_img]:rounded-lg [&_img]:max-w-full [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:italic [&_a]:text-primary [&_a]:underline"
+              className="blog-content"
               dangerouslySetInnerHTML={{ __html: contentParts.after }}
             />
           </>
