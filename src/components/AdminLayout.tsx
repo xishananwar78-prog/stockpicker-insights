@@ -9,6 +9,7 @@ import {
   Menu,
   LogOut,
   User,
+  Users,
   ExternalLink
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -201,6 +202,12 @@ function SidebarComponent() {
 
         {isAdmin && (
           <div className="pt-2 space-y-1">
+            <NavItem
+              href="/admin/subscribers"
+              label="Subscribers"
+              icon={Users}
+              isActive={location.pathname === '/admin/subscribers'}
+            />
             <ManageMenuDialog />
             <ManagePopupDialog />
           </div>
@@ -294,6 +301,13 @@ function MobileHeader() {
 
               {isAdmin && (
                 <div className="pt-2 space-y-1">
+                  <NavItem
+                    href="/admin/subscribers"
+                    label="Subscribers"
+                    icon={Users}
+                    isActive={location.pathname === '/admin/subscribers'}
+                    onClick={() => setIsOpen(false)}
+                  />
                   <ManageMenuDialog />
                   <ManagePopupDialog />
                 </div>
