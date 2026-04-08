@@ -103,13 +103,20 @@ export default function SwingDetailPage() {
 
         <UpstoxBanner />
 
-        <SwingRecommendationCard
-          recommendation={recommendation}
-          onEdit={() => setIsFormOpen(true)}
-          onDelete={() => setShowDelete(true)}
-          onExit={() => setExitRec(rawRec!)}
-          onUpdatePrice={() => setUpdatePriceRec(rawRec!)}
-        />
+        <div className="relative">
+          {isLockedForGuest && (
+            <LockedOverlay message="✨ This is a live pick! Subscribe to unlock full details" />
+          )}
+          <div className={isLockedForGuest ? 'blur-md select-none pointer-events-none' : ''}>
+            <SwingRecommendationCard
+              recommendation={recommendation}
+              onEdit={() => setIsFormOpen(true)}
+              onDelete={() => setShowDelete(true)}
+              onExit={() => setExitRec(rawRec!)}
+              onUpdatePrice={() => setUpdatePriceRec(rawRec!)}
+            />
+          </div>
+        </div>
       </div>
 
       <SwingRecommendationForm
