@@ -25,7 +25,7 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner position="top-center" theme="dark" />
-        <BrowserRouter basename="/stockpicker">
+        <BrowserRouter>
           <AdminPopupViewer />
           <Routes>
             <Route path="/" element={<Index />} />
