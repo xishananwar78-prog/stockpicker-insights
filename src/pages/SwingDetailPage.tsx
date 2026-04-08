@@ -48,6 +48,7 @@ export default function SwingDetailPage() {
 
   const rawRec = recommendations.find((r) => r.id === id);
   const recommendation = rawRec ? calculateSwingStatus(rawRec) : null;
+  const isLockedForGuest = !user && recommendation?.status === 'OPEN';
 
   if (isLoading) {
     return (
