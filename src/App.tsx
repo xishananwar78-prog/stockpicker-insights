@@ -14,6 +14,8 @@ import AdminAuthPage from "./pages/AdminAuthPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import BlogEditorPage from "./pages/BlogEditorPage";
+import SubscribePage from "./pages/SubscribePage";
+import ManageSubscribersPage from "./pages/ManageSubscribersPage";
 import NotFound from "./pages/NotFound";
 import { AdminPopupViewer } from "@/components/AdminPopupViewer";
 
@@ -39,6 +41,8 @@ const App = () => (
             <Route path="/blog/new" element={<BlogEditorPage />} />
             <Route path="/blog/:slug/edit" element={<BlogEditorPage />} />
             <Route path="/blog/:slug" element={<BlogPostPage />} />
+            <Route path="/subscribe" element={<SubscribePage />} />
+            <Route path="/admin/subscribers" element={<ManageSubscribersPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
