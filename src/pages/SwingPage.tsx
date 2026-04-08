@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 type FilterTab = 'all' | 'open' | 'exit';
 
 export default function SwingPage() {
-  const { isAdmin } = useAuthContext();
+  const { isAdmin, user } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [dateFrom, setDateFrom] = useState<string>('');
@@ -163,9 +163,10 @@ export default function SwingPage() {
               )}
             </div>
           ) : (
-            calculatedRecommendations.map((rec) => (
-              <SwingCompactCard key={rec.id} recommendation={rec} />
-            ))
+            calculatedRecommendations.map((rec) => {
+                const isOpenAndGuest = !user && rec.status === 'OPEN';
+                return <SwingCompactCard key={rec.id} recommendation={rec} isLocked={isOpenAndGuest} />;
+              })
           )}
         </div>
       </div>
