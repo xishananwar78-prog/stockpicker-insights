@@ -8,6 +8,8 @@ import { UpdatePriceDialog } from '@/components/UpdatePriceDialog';
 import { SwingExitDialog } from '@/components/SwingExitDialog';
 import { Button } from '@/components/ui/button';
 import { UpstoxBanner } from '@/components/UpstoxBanner';
+import { LockedOverlay } from '@/components/LockedOverlay';
+import { useAuthContext } from '@/components/AuthContext';
 import {
   useSwingRecommendations,
   useUpdateSwingRecommendation,
@@ -31,6 +33,7 @@ import {
 export default function SwingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuthContext();
   const { data: recommendations = [], isLoading } = useSwingRecommendations();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
