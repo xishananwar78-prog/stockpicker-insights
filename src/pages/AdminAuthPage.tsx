@@ -51,9 +51,9 @@ export default function AdminAuthPage() {
           <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
             <Lock className="h-6 w-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Admin Login</h1>
+          <h1 className="text-2xl font-bold text-foreground">Login</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Sign in to manage recommendations
+            Sign in to continue
           </p>
         </div>
 
