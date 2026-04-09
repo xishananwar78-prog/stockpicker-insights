@@ -3,7 +3,7 @@ import { CalculatedSwingRecommendation } from '@/types/recommendation';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/recommendationUtils';
 import { StatusBadge } from './StatusBadge';
-import { LockedOverlay } from './LockedOverlay';
+
 
 interface SwingCompactCardProps {
   recommendation: CalculatedSwingRecommendation;
@@ -37,7 +37,7 @@ export function SwingCompactCard({ recommendation, isLocked = false }: SwingComp
         "relative bg-gradient-card border border-border rounded-xl overflow-hidden transition-all duration-200 group",
         isLocked ? 'select-none' : 'hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5'
       )}>
-        {isLocked && <LockedOverlay message="🔒 This live pick is for subscribers only" />}
+        {/* No overlay on list page - just blur name & price */}
         {/* Left accent bar */}
         <div className={cn(
           'absolute left-0 top-0 bottom-0 w-1 rounded-l-xl',
