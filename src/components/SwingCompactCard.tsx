@@ -32,7 +32,7 @@ export function SwingCompactCard({ recommendation, isLocked = false }: SwingComp
   const isProfit = profitLossPercent > 0;
 
   return (
-    <Link to={isLocked ? '#' : `/swing/${id}`} className="block" onClick={isLocked ? (e) => e.preventDefault() : undefined}>
+    <Link to={`/swing/${id}`} className="block">
       <div className={cn(
         "relative bg-gradient-card border border-border rounded-xl overflow-hidden transition-all duration-200 group",
         isLocked ? 'select-none' : 'hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5'
