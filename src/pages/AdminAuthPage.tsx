@@ -16,8 +16,8 @@ export default function AdminAuthPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && user && isAdmin) {
-      navigate('/intraday');
+    if (!isLoading && user) {
+      navigate(isAdmin ? '/intraday' : '/swing');
     }
   }, [user, isAdmin, isLoading, navigate]);
 
@@ -33,7 +33,7 @@ export default function AdminAuthPage() {
       return;
     }
 
-    toast.success('Welcome back, Admin!');
+    toast.success('Welcome back!');
   };
 
   if (isLoading) {

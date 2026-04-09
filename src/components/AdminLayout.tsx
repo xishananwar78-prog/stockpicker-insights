@@ -8,6 +8,7 @@ import {
   FileText,
   Menu,
   LogOut,
+  Lock,
   User,
   Users,
   ExternalLink
@@ -215,7 +216,7 @@ function SidebarComponent() {
       </nav>
 
       <div className="p-4 border-t border-sidebar-border space-y-3">
-        {user && (
+        {user ? (
           <>
             <div className="flex items-center gap-3 px-3 py-2 bg-accent/50 rounded-lg">
               <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
@@ -237,6 +238,15 @@ function SidebarComponent() {
               Sign Out
             </Button>
           </>
+        ) : (
+          <Button
+            variant="outline"
+            onClick={() => navigate('/admin')}
+            className="w-full justify-start"
+          >
+            <Lock className="h-4 w-4 mr-2" />
+            Login
+          </Button>
         )}
         
         <div className="bg-gradient-card rounded-xl p-4 border border-border">
@@ -315,7 +325,7 @@ function MobileHeader() {
             </nav>
             
             <div className="p-4 border-t border-sidebar-border space-y-3">
-              {user && (
+              {user ? (
                 <>
                   <div className="flex items-center gap-3 px-3 py-2 bg-accent/50 rounded-lg">
                     <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
@@ -337,6 +347,15 @@ function MobileHeader() {
                     Sign Out
                   </Button>
                 </>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={() => { setIsOpen(false); navigate('/admin'); }}
+                  className="w-full justify-start"
+                >
+                  <Lock className="h-4 w-4 mr-2" />
+                  Login
+                </Button>
               )}
             </div>
           </SheetContent>
