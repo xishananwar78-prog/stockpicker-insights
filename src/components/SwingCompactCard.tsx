@@ -3,7 +3,7 @@ import { CalculatedSwingRecommendation } from '@/types/recommendation';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/recommendationUtils';
 import { StatusBadge } from './StatusBadge';
-import { LockedOverlay } from './LockedOverlay';
+
 
 interface SwingCompactCardProps {
   recommendation: CalculatedSwingRecommendation;
