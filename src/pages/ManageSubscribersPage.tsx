@@ -51,11 +51,15 @@ export default function ManageSubscribersPage() {
 
   const addMutation = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      // Use edge function to create user
       const { data, error } = await supabase.functions.invoke('create-subscriber', {
-        body: { email, password },
+        body: { email: email.trim(), password },
       });
-      if (error) throw error;
+
+      if (error) {
+        const details = error instanceof Error ? error.message : 'Failed to add subscriber';
+        throw new Error(details);
+      }
+
       if (data?.error) throw new Error(data.error);
       return data;
     },
