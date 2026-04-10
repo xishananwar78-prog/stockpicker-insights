@@ -20,10 +20,8 @@ export const AppDownloadBanner = () => {
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
 
-    // Only show in regular mobile browsers (not WebView, not desktop)
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
-
-    if (isMobile && !isWebView) {
+    // Show in all regular browsers (mobile + desktop), hide only in WebView
+    if (!isWebView) {
       setVisible(true);
     }
   }, []);
