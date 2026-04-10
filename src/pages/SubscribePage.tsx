@@ -142,9 +142,19 @@ export default function SubscribePage() {
                 ))}
               </ul>
 
-              <div className="bg-muted rounded-lg p-3 text-center">
-                <p className="text-xs text-muted-foreground mb-1">Pay via UPI</p>
-                <p className="text-base font-bold text-foreground font-mono tracking-wide select-all">{UPI_ID}</p>
+              <div className="bg-muted rounded-lg p-3 flex items-center justify-center gap-3">
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground mb-1">Pay via UPI</p>
+                  <p className="text-base font-bold text-foreground font-mono tracking-wide select-all">{UPI_ID}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleCopy}
+                  className="shrink-0 text-muted-foreground hover:text-primary"
+                >
+                  {copied ? <Check className="h-4 w-4 text-profit" /> : <Copy className="h-4 w-4" />}
+                </Button>
               </div>
             </CardContent>
           </Card>
