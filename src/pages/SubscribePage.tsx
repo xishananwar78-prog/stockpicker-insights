@@ -1,7 +1,8 @@
 import { AdminLayout } from '@/components/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ExternalLink, Gift, Crown, CheckCircle2, ArrowRight, Mail, Clock, Shield, Star, Zap, TrendingUp } from 'lucide-react';
+import { ExternalLink, Gift, Crown, CheckCircle2, ArrowRight, Mail, Clock, Shield, Star, Zap, TrendingUp, Copy, Check } from 'lucide-react';
+import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 
 const UPSTOX_LINK = 'https://upstox.com/open-demat-account?f=0VQ4';
