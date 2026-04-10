@@ -18,6 +18,7 @@ import SubscribePage from "./pages/SubscribePage";
 import ManageSubscribersPage from "./pages/ManageSubscribersPage";
 import NotFound from "./pages/NotFound";
 import { AdminPopupViewer } from "@/components/AdminPopupViewer";
+import { AppDownloadBanner } from "@/components/AppDownloadBanner";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
         <Sonner position="top-center" theme="dark" />
         <BrowserRouter>
           <AdminPopupViewer />
+          <AppDownloadBanner />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/admin" element={<AdminAuthPage />} />
