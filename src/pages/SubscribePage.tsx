@@ -1,7 +1,8 @@
 import { AdminLayout } from '@/components/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ExternalLink, Gift, Crown, CheckCircle2, ArrowRight, Mail, Clock, Shield, Star, Zap, TrendingUp } from 'lucide-react';
+import { ExternalLink, Gift, Crown, CheckCircle2, ArrowRight, Mail, Clock, Shield, Star, Zap, TrendingUp, Copy, Check } from 'lucide-react';
+import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 
 const UPSTOX_LINK = 'https://upstox.com/open-demat-account?f=0VQ4';
@@ -9,6 +10,14 @@ const UPI_ID = 'time2trade@axl';
 const EMAIL = 'time2trade.pro@gmail.com';
 
 export default function SubscribePage() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(UPI_ID);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <AdminLayout>
       <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-8">
@@ -133,9 +142,19 @@ export default function SubscribePage() {
                 ))}
               </ul>
 
-              <div className="bg-muted rounded-lg p-3 text-center">
-                <p className="text-xs text-muted-foreground mb-1">Pay via UPI</p>
-                <p className="text-base font-bold text-foreground font-mono tracking-wide select-all">{UPI_ID}</p>
+              <div className="bg-muted rounded-lg p-3 flex items-center justify-center gap-3">
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground mb-1">Pay via UPI</p>
+                  <p className="text-base font-bold text-foreground font-mono tracking-wide select-all">{UPI_ID}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleCopy}
+                  className="shrink-0 text-muted-foreground hover:text-primary"
+                >
+                  {copied ? <Check className="h-4 w-4 text-profit" /> : <Copy className="h-4 w-4" />}
+                </Button>
               </div>
             </CardContent>
           </Card>
