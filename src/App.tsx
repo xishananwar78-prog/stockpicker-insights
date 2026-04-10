@@ -18,6 +18,7 @@ import SubscribePage from "./pages/SubscribePage";
 import ManageSubscribersPage from "./pages/ManageSubscribersPage";
 import NotFound from "./pages/NotFound";
 import { AdminPopupViewer } from "@/components/AdminPopupViewer";
+import { AppDownloadBanner } from "@/components/AppDownloadBanner";
 
 const queryClient = new QueryClient();
 
