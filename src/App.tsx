@@ -30,6 +30,7 @@ const App = () => (
         <Sonner position="top-center" theme="dark" />
         <BrowserRouter>
           <AdminPopupViewer />
+          <AppDownloadBanner />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/admin" element={<AdminAuthPage />} />
