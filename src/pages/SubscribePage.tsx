@@ -10,6 +10,14 @@ const UPI_ID = 'time2trade@axl';
 const EMAIL = 'time2trade.pro@gmail.com';
 
 export default function SubscribePage() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(UPI_ID);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <AdminLayout>
       <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-8">
