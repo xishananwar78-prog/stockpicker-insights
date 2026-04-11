@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Card } from '@/components/ui/card';
 import { useAuthContext } from '@/components/AuthContext';
+import { SwingPriceBar } from './SwingPriceBar';
 
 interface SwingRecommendationCardProps {
   recommendation: CalculatedSwingRecommendation;
@@ -189,6 +190,16 @@ export function SwingRecommendationCard({
           </div>
         </div>
       )}
+
+      {/* Price Range Bar */}
+      <SwingPriceBar
+        currentPrice={currentPrice}
+        recommendedPrice={recommendedPrice}
+        stoploss={stoploss}
+        target1={target1}
+        target2={target2}
+        isNotExecuted={status === 'EXIT' && exitReason === 'NOT_EXECUTED'}
+      />
 
       <div className="px-4 pb-4">
         {/* Stats Grid */}
