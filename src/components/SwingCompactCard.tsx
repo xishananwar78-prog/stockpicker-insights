@@ -3,6 +3,7 @@ import { CalculatedSwingRecommendation } from '@/types/recommendation';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/recommendationUtils';
 import { StatusBadge } from './StatusBadge';
+import { SwingPriceBar } from './SwingPriceBar';
 
 
 interface SwingCompactCardProps {
@@ -113,6 +114,16 @@ export function SwingCompactCard({ recommendation, isLocked = false }: SwingComp
             </div>
           )}
         </div>
+
+        {/* Price Range Bar */}
+        <SwingPriceBar
+          currentPrice={currentPrice}
+          recommendedPrice={entryPrice}
+          stoploss={stoploss}
+          target1={recommendation.target1}
+          target2={target2}
+          isNotExecuted={isExited && exitReason === 'NOT_EXECUTED'}
+        />
 
         {/* Footer: View Details */}
         <div className="border-t border-border/50 px-4 py-2 flex items-center justify-center gap-1.5 group-hover:bg-primary/5 transition-colors">
