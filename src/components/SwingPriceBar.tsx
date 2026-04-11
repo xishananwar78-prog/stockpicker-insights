@@ -30,45 +30,63 @@ export function SwingPriceBar({
   const t2Pos = target2 ? toPercent(target2) : null;
   const curPos = toPercent(currentPrice);
 
-  // Determine current price color
-  const priceAboveEntry = currentPrice >= recommendedPrice;
   const atEntry = Math.abs(currentPrice - recommendedPrice) / recommendedPrice < 0.002;
+  const priceAboveEntry = currentPrice >= recommendedPrice;
 
-  // Build gradient fill
-  let fillLeft: number, fillRight: number, fillColor: string;
+  // Full colored fill from SL to highest target, with contextual gradient
+  let trackGradient: string;
   if (isNotExecuted) {
-    fillLeft = 0;
-    fillRight = 0;
-    fillColor = 'transparent';
+    trackGradient = 'linear-gradient(90deg, hsl(var(--muted-foreground) / 0.15) 0%, hsl(var(--muted-foreground) / 0.1) 100%)';
   } else if (atEntry) {
-    fillLeft = entryPos - 0.5;
-    fillRight = entryPos + 0.5;
-    fillColor = 'hsl(var(--primary))';
+    trackGradient = `linear-gradient(90deg, 
+      hsl(var(--loss) / 0.2) 0%, 
+      hsl(var(--loss) / 0.3) ${slPos}%, 
+      hsl(var(--primary) / 0.15) ${entryPos - 5}%, 
+      hsl(var(--primary) / 0.4) ${entryPos}%, 
+      hsl(var(--primary) / 0.15) ${entryPos + 5}%, 
+      hsl(var(--profit) / 0.2) ${t1Pos}%, 
+      hsl(var(--profit) / 0.15) 100%)`;
   } else if (priceAboveEntry) {
-    fillLeft = entryPos;
-    fillRight = curPos;
-    fillColor = 'hsl(var(--profit))';
+    // Green dominant — loss zone faded, profit zone bright
+    trackGradient = `linear-gradient(90deg, 
+      hsl(var(--loss) / 0.12) 0%, 
+      hsl(var(--loss) / 0.18) ${slPos}%, 
+      hsl(var(--muted-foreground) / 0.08) ${(slPos + entryPos) / 2}%,
+      hsl(var(--profit) / 0.15) ${entryPos}%, 
+      hsl(var(--profit) / 0.5) ${(entryPos + curPos) / 2}%, 
+      hsl(var(--profit) / 0.7) ${curPos}%, 
+      hsl(var(--profit) / 0.2) ${Math.min(curPos + 10, 100)}%, 
+      hsl(var(--profit) / 0.1) 100%)`;
   } else {
-    fillLeft = curPos;
-    fillRight = entryPos;
-    fillColor = 'hsl(var(--loss))';
+    // Red dominant — loss zone bright, profit zone faded
+    trackGradient = `linear-gradient(90deg, 
+      hsl(var(--loss) / 0.15) 0%, 
+      hsl(var(--loss) / 0.2) ${Math.max(curPos - 5, 0)}%, 
+      hsl(var(--loss) / 0.7) ${curPos}%, 
+      hsl(var(--loss) / 0.5) ${(curPos + entryPos) / 2}%, 
+      hsl(var(--loss) / 0.15) ${entryPos}%, 
+      hsl(var(--muted-foreground) / 0.08) ${(entryPos + t1Pos) / 2}%,
+      hsl(var(--profit) / 0.1) ${t1Pos}%, 
+      hsl(var(--profit) / 0.08) 100%)`;
   }
 
   const markers = [
-    { pos: slPos, label: 'SL', color: 'bg-loss', textColor: 'text-loss', dotSize: 'w-2 h-2' },
-    { pos: entryPos, label: 'Entry', color: 'bg-primary', textColor: 'text-primary', dotSize: 'w-2.5 h-2.5' },
-    { pos: t1Pos, label: 'T1', color: 'bg-profit', textColor: 'text-profit', dotSize: 'w-2 h-2' },
-    ...(t2Pos !== null ? [{ pos: t2Pos, label: 'T2', color: 'bg-profit', textColor: 'text-profit', dotSize: 'w-2 h-2' }] : []),
+    { pos: slPos, label: 'SL', color: 'loss' },
+    { pos: entryPos, label: 'Entry', color: 'primary' },
+    { pos: t1Pos, label: 'T1', color: 'profit' },
+    ...(t2Pos !== null ? [{ pos: t2Pos, label: 'T2', color: 'profit' }] : []),
   ];
+
+  const curColor = atEntry ? 'primary' : priceAboveEntry ? 'profit' : 'loss';
 
   return (
     <div className="px-4 py-3">
-      {/* Labels row */}
-      <div className="relative h-4 mb-1.5">
+      {/* Labels */}
+      <div className="relative h-4 mb-1">
         {markers.map((m, i) => (
           <span
             key={i}
-            className={cn('absolute text-[9px] font-semibold -translate-x-1/2 leading-none', m.textColor)}
+            className={cn('absolute text-[9px] font-bold -translate-x-1/2 leading-none', `text-${m.color}`)}
             style={{ left: `${m.pos}%` }}
           >
             {m.label}
@@ -77,74 +95,64 @@ export function SwingPriceBar({
       </div>
 
       {/* Track */}
-      <div className="relative h-3 rounded-full bg-muted/40 overflow-hidden shadow-inner">
-        {/* Background track segments for depth */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-loss/5 via-muted/10 to-profit/5" />
+      <div
+        className="relative h-[10px] rounded-full overflow-hidden"
+        style={{ background: trackGradient }}
+      >
+        {/* Inner highlight line along entire track for depth */}
+        <div className="absolute inset-x-0 top-0 h-px bg-white/5 rounded-full" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-black/20 rounded-full" />
 
-        {/* Active fill */}
-        {!isNotExecuted && (
+        {/* Bright accent segment: entry↔current */}
+        {!isNotExecuted && !atEntry && (
           <div
-            className="absolute top-0 bottom-0 rounded-full transition-all duration-500"
+            className="absolute top-0 bottom-0 transition-all duration-500"
             style={{
-              left: `${fillLeft}%`,
-              width: `${Math.max(0, fillRight - fillLeft)}%`,
-              background: `linear-gradient(90deg, ${fillColor}66, ${fillColor})`,
-              boxShadow: `0 0 8px ${fillColor}40`,
+              left: `${Math.min(entryPos, curPos)}%`,
+              width: `${Math.abs(curPos - entryPos)}%`,
+              background: priceAboveEntry
+                ? `linear-gradient(90deg, hsl(var(--profit) / 0.3), hsl(var(--profit) / 0.85))`
+                : `linear-gradient(90deg, hsl(var(--loss) / 0.85), hsl(var(--loss) / 0.3))`,
+              boxShadow: priceAboveEntry
+                ? '0 0 12px hsl(var(--profit) / 0.3)'
+                : '0 0 12px hsl(var(--loss) / 0.3)',
             }}
           />
         )}
 
-        {/* Marker dots on track */}
+        {/* Marker ticks */}
         {markers.map((m, i) => (
           <div
             key={i}
-            className={cn('absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full ring-1 ring-background/50', m.color, m.dotSize)}
-            style={{ left: `${m.pos}%` }}
+            className="absolute top-0 bottom-0 w-[2px] -translate-x-1/2"
+            style={{
+              left: `${m.pos}%`,
+              backgroundColor: `hsl(var(--${m.color}) / 0.7)`,
+            }}
           />
         ))}
 
-        {/* Current price indicator */}
+        {/* Current price pointer */}
         {!isNotExecuted && (
           <div
-            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-500"
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 transition-all duration-500"
             style={{ left: `${curPos}%` }}
           >
-            {/* Glow */}
             <div
-              className="absolute inset-0 rounded-full blur-sm opacity-60"
+              className="w-4 h-4 rounded-full border-2 border-background"
               style={{
-                width: 16,
-                height: 16,
-                marginTop: -8,
-                marginLeft: -8,
-                backgroundColor: atEntry
-                  ? 'hsl(var(--primary))'
-                  : priceAboveEntry
-                    ? 'hsl(var(--profit))'
-                    : 'hsl(var(--loss))',
-              }}
-            />
-            {/* Dot */}
-            <div
-              className="relative w-3.5 h-3.5 rounded-full border-2 border-background shadow-lg"
-              style={{
-                marginTop: -7,
-                marginLeft: -7,
-                backgroundColor: atEntry
-                  ? 'hsl(var(--primary))'
-                  : priceAboveEntry
-                    ? 'hsl(var(--profit))'
-                    : 'hsl(var(--loss))',
+                backgroundColor: `hsl(var(--${curColor}))`,
+                boxShadow: `0 0 8px hsl(var(--${curColor}) / 0.6), 0 0 16px hsl(var(--${curColor}) / 0.25)`,
               }}
             />
           </div>
         )}
       </div>
 
-      {/* Not executed label */}
+      {/* Not executed */}
       {isNotExecuted && (
-        <p className="text-center text-[10px] text-muted-foreground mt-1.5 font-medium tracking-wide">
-          NOT EXECUTED
+        <p className="text-center text-[10px] text-muted-foreground mt-1.5 font-medium tracking-widest uppercase">
+          Not Executed
         </p>
       )}
     </div>
