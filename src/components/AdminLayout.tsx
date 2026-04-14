@@ -6,6 +6,7 @@ import {
   BarChart3, 
   Zap, 
   FileText,
+  GraduationCap,
   Menu,
   LogOut,
   Lock,
@@ -34,6 +35,7 @@ const navItems = [
   { href: '/intraday-report', label: 'Daily Report', icon: FileText },
   { href: '/swing', label: 'Swing', icon: TrendingUp },
   { href: '/blog', label: 'Blog', icon: FileText },
+  { href: '/learning', label: 'Learning', icon: GraduationCap },
   { href: '/breakout', label: 'Breakout', icon: BarChart3, disabled: true },
 ];
 
