@@ -14,6 +14,9 @@ import AdminAuthPage from "./pages/AdminAuthPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import BlogEditorPage from "./pages/BlogEditorPage";
+import LearningPage from "./pages/LearningPage";
+import LearningArticlePage from "./pages/LearningArticlePage";
+import LearningEditorPage from "./pages/LearningEditorPage";
 import SubscribePage from "./pages/SubscribePage";
 import ManageSubscribersPage from "./pages/ManageSubscribersPage";
 import NotFound from "./pages/NotFound";
@@ -43,6 +46,10 @@ const App = () => (
             <Route path="/blog/new" element={<BlogEditorPage />} />
             <Route path="/blog/:slug/edit" element={<BlogEditorPage />} />
             <Route path="/blog/:slug" element={<BlogPostPage />} />
+            <Route path="/learning" element={<LearningPage />} />
+            <Route path="/learning/new" element={<LearningEditorPage />} />
+            <Route path="/learning/:slug/edit" element={<LearningEditorPage />} />
+            <Route path="/learning/:slug" element={<LearningArticlePage />} />
             <Route path="/subscribe" element={<SubscribePage />} />
             <Route path="/admin/subscribers" element={<ManageSubscribersPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
