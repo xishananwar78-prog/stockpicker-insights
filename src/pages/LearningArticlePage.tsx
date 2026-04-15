@@ -17,31 +17,31 @@ import {
 import { useState, useMemo } from 'react';
 
 function splitContentWithAds(html: string) {
-  // Split on closing </p> tags to insert ads after every 3 paragraphs
-  // But NOT right after headings (h2, h3, h4)
+  // Insert ads ONLY above headings (h2-h6) that appear after enough paragraphs.
+  // This keeps ads separate from content like lists, quotes, etc.
   const parts: { html: string; insertAd: boolean }[] = [];
   
-  // Split into blocks by </p>
-  const regex = /<\/p>/gi;
+  // Split by heading tags to find natural break points
+  const headingRegex = /(<h[2-6][^>]*>)/gi;
   let lastIndex = 0;
   let pCount = 0;
   let match;
   
-  while ((match = regex.exec(html)) !== null) {
-    const endIdx = match.index + match[0].length;
-    const chunk = html.substring(lastIndex, endIdx);
-    pCount++;
+  while ((match = headingRegex.exec(html)) !== null) {
+    const chunk = html.substring(lastIndex, match.index);
+    // Count paragraphs in this chunk
+    const pMatches = chunk.match(/<\/p>/gi);
+    pCount += pMatches ? pMatches.length : 0;
     
-    // Check if the NEXT content starts with a heading
-    const remaining = html.substring(endIdx).trimStart();
-    const nextIsHeading = /^<h[2-6]/i.test(remaining);
-    
-    const shouldInsertAd = pCount % 3 === 0 && !nextIsHeading;
+    // Insert ad above this heading if we've passed 3+ paragraphs since last ad
+    const shouldInsertAd = pCount >= 3;
     parts.push({ html: chunk, insertAd: shouldInsertAd });
-    lastIndex = endIdx;
+    if (shouldInsertAd) pCount = 0;
+    
+    lastIndex = match.index;
   }
   
-  // Remaining content
+  // Remaining content after last heading
   if (lastIndex < html.length) {
     parts.push({ html: html.substring(lastIndex), insertAd: false });
   }
