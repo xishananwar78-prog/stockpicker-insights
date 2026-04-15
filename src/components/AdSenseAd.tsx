@@ -29,15 +29,14 @@ export function AdSenseAd() {
   if (isWebView) return null;
 
   return (
-    <div ref={adRef} className="my-6 flex justify-center">
-      <div className="w-full max-w-2xl rounded-lg overflow-hidden bg-muted/30 border border-border/50 p-1">
+    <div ref={adRef} className="my-10 flex justify-center">
+      <div className="w-full max-w-2xl">
         <ins
           className="adsbygoogle"
           style={{ display: 'block' }}
           data-ad-format="auto"
           data-full-width-responsive="true"
-          // User must replace with their own ad client & slot
-          data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+          data-ad-client="ca-pub-1732434513107221"
           data-ad-slot="XXXXXXXXXX"
         />
       </div>
