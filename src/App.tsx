@@ -17,6 +17,7 @@ import BlogEditorPage from "./pages/BlogEditorPage";
 import LearningPage from "./pages/LearningPage";
 import LearningArticlePage from "./pages/LearningArticlePage";
 import LearningEditorPage from "./pages/LearningEditorPage";
+import ChatPage from "./pages/ChatPage";
 import SubscribePage from "./pages/SubscribePage";
 import ManageSubscribersPage from "./pages/ManageSubscribersPage";
 import NotFound from "./pages/NotFound";
@@ -50,6 +51,7 @@ const App = () => (
             <Route path="/learning/new" element={<LearningEditorPage />} />
             <Route path="/learning/:slug/edit" element={<LearningEditorPage />} />
             <Route path="/learning/:slug" element={<LearningArticlePage />} />
+            <Route path="/chat" element={<ChatPage />} />
             <Route path="/subscribe" element={<SubscribePage />} />
             <Route path="/admin/subscribers" element={<ManageSubscribersPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

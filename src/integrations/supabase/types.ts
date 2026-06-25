@@ -92,6 +92,30 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          message: string
+          nickname: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          message: string
+          nickname: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          nickname?: string
+        }
+        Relationships: []
+      }
       custom_menu_items: {
         Row: {
           created_at: string
@@ -392,6 +416,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_chat_messages: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
