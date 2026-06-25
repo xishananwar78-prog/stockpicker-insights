@@ -7,6 +7,7 @@ import {
   Zap, 
   FileText,
   GraduationCap,
+  MessageCircle,
   Menu,
   LogOut,
   Lock,
@@ -36,6 +37,7 @@ const navItems = [
   { href: '/swing', label: 'Swing', icon: TrendingUp },
   { href: '/blog', label: 'Blog', icon: FileText },
   { href: '/learning', label: 'Learning', icon: GraduationCap },
+  { href: '/chat', label: 'Chat', icon: MessageCircle },
   { href: '/breakout', label: 'Breakout', icon: BarChart3, disabled: true },
 ];
 
