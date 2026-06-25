@@ -31,7 +31,7 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner position="top-center" theme="dark" />
-        <BrowserRouter basename="/stockpicker">
+        <BrowserRouter>
           <AdminPopupViewer />
           <AppDownloadBanner />
           <Routes>
