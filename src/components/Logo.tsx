@@ -1,4 +1,5 @@
 import { TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 interface LogoProps {
@@ -21,7 +22,7 @@ export function Logo({ className, showText = true, size = 'md' }: LogoProps) {
   };
 
   return (
-    <div className={cn('flex items-center gap-2', className)}>
+    <Link to="/" className={cn('flex items-center gap-2', className)}>
       <div className="relative">
         <div className="bg-gradient-brand rounded-lg p-1.5 shadow-glow-brand">
           <TrendingUp className={cn('text-primary-foreground', sizeClasses[size])} />
@@ -33,6 +34,6 @@ export function Logo({ className, showText = true, size = 'md' }: LogoProps) {
           <span className="text-gradient-brand">PICKER</span>
         </div>
       )}
-    </div>
+    </Link>
   );
 }
