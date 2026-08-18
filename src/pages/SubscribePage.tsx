@@ -164,7 +164,7 @@ export default function SubscribePage() {
                 {
                   step: '1',
                   title: 'Choose Your Plan',
-                  desc: 'Open an Upstox account (free) or pay via UPI',
+                  desc: 'Open an Upstox account (free) or scan the QR code to pay',
                 },
                 {
                   step: '2',
