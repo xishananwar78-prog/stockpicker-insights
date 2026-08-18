@@ -1,22 +1,14 @@
 import { AdminLayout } from '@/components/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ExternalLink, Gift, Crown, CheckCircle2, ArrowRight, Mail, Clock, Shield, Star, Zap, TrendingUp, Copy, Check } from 'lucide-react';
-import { useState } from 'react';
+import { ExternalLink, Gift, Crown, CheckCircle2, ArrowRight, Mail, Clock, Shield, Star, Zap, TrendingUp } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import qrCodeAsset from '@/assets/qr-code.jpg.asset.json';
 
 const UPSTOX_LINK = 'https://upstox.com/open-demat-account?f=0VQ4';
-const UPI_ID = 'time2trade@axl';
 const EMAIL = 'time2trade.pro@gmail.com';
 
 export default function SubscribePage() {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(UPI_ID);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <AdminLayout>
