@@ -134,19 +134,19 @@ export default function SubscribePage() {
                 ))}
               </ul>
 
-              <div className="bg-muted rounded-lg p-3 flex items-center justify-center gap-3">
-                <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">Pay via UPI</p>
-                  <p className="text-base font-bold text-foreground font-mono tracking-wide select-all">{UPI_ID}</p>
+              <div className="bg-muted rounded-lg p-4 text-center space-y-3">
+                <p className="text-xs text-muted-foreground">Scan QR code to pay</p>
+                <div className="bg-white rounded-lg p-2 inline-block">
+                  <img
+                    src={qrCodeAsset.url}
+                    alt="UPI QR Code for payment"
+                    className="h-40 w-40 object-contain"
+                    loading="lazy"
+                  />
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCopy}
-                  className="shrink-0 text-muted-foreground hover:text-primary"
-                >
-                  {copied ? <Check className="h-4 w-4 text-profit" /> : <Copy className="h-4 w-4" />}
-                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Use any UPI app to scan and complete payment
+                </p>
               </div>
             </CardContent>
           </Card>
