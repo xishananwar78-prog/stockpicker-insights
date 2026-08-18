@@ -1,22 +1,14 @@
 import { AdminLayout } from '@/components/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ExternalLink, Gift, Crown, CheckCircle2, ArrowRight, Mail, Clock, Shield, Star, Zap, TrendingUp, Copy, Check } from 'lucide-react';
-import { useState } from 'react';
+import { ExternalLink, Gift, Crown, CheckCircle2, ArrowRight, Mail, Clock, Shield, Star, Zap, TrendingUp } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import qrCodeAsset from '@/assets/qr-code.jpg.asset.json';
 
 const UPSTOX_LINK = 'https://upstox.com/open-demat-account?f=0VQ4';
-const UPI_ID = 'time2trade@axl';
 const EMAIL = 'time2trade.pro@gmail.com';
 
 export default function SubscribePage() {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(UPI_ID);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <AdminLayout>
@@ -142,19 +134,19 @@ export default function SubscribePage() {
                 ))}
               </ul>
 
-              <div className="bg-muted rounded-lg p-3 flex items-center justify-center gap-3">
-                <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">Pay via UPI</p>
-                  <p className="text-base font-bold text-foreground font-mono tracking-wide select-all">{UPI_ID}</p>
+              <div className="bg-muted rounded-lg p-4 text-center space-y-3">
+                <p className="text-xs text-muted-foreground">Scan QR code to pay</p>
+                <div className="bg-white rounded-lg p-2 inline-block">
+                  <img
+                    src={qrCodeAsset.url}
+                    alt="UPI QR Code for payment"
+                    className="h-40 w-40 object-contain"
+                    loading="lazy"
+                  />
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCopy}
-                  className="shrink-0 text-muted-foreground hover:text-primary"
-                >
-                  {copied ? <Check className="h-4 w-4 text-profit" /> : <Copy className="h-4 w-4" />}
-                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Use any UPI app to scan and complete payment
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -172,7 +164,7 @@ export default function SubscribePage() {
                 {
                   step: '1',
                   title: 'Choose Your Plan',
-                  desc: 'Open an Upstox account (free) or pay via UPI',
+                  desc: 'Open an Upstox account (free) or scan the QR code to pay',
                 },
                 {
                   step: '2',
