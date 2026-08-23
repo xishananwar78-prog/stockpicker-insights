@@ -138,7 +138,7 @@ export default function SubscribePage() {
                 <p className="text-xs text-muted-foreground">Scan QR code to pay</p>
                 <div className="bg-white rounded-lg p-2 inline-block">
                   <img
-                    src={qrCodeAsset.url}
+                    src={qrCodeImage}
                     alt="UPI QR Code for payment"
                     className="h-40 w-40 object-contain"
                     loading="lazy"
