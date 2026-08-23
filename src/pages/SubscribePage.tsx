@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ExternalLink, Gift, Crown, CheckCircle2, ArrowRight, Mail, Clock, Shield, Star, Zap, TrendingUp } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import qrCodeAsset from '@/assets/qr-code.jpg.asset.json';
+import qrCodeImage from '@/assets/qr-code.jpg';
 
 const UPSTOX_LINK = 'https://upstox.com/open-demat-account?f=0VQ4';
 const EMAIL = 'time2trade.pro@gmail.com';
@@ -138,7 +138,7 @@ export default function SubscribePage() {
                 <p className="text-xs text-muted-foreground">Scan QR code to pay</p>
                 <div className="bg-white rounded-lg p-2 inline-block">
                   <img
-                    src={qrCodeAsset.url}
+                    src={qrCodeImage}
                     alt="UPI QR Code for payment"
                     className="h-40 w-40 object-contain"
                     loading="lazy"
