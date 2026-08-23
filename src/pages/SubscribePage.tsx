@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ExternalLink, Gift, Crown, CheckCircle2, ArrowRight, Mail, Clock, Shield, Star, Zap, TrendingUp } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import qrCodeAsset from '@/assets/qr-code.jpg.asset.json';
+import qrCodeImage from '@/assets/qr-code.jpg';
 
 const UPSTOX_LINK = 'https://upstox.com/open-demat-account?f=0VQ4';
 const EMAIL = 'time2trade.pro@gmail.com';
