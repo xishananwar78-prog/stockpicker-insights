@@ -261,13 +261,21 @@ export function SwingRecommendationCard({
               />
             </div>
           </div>
-          <div className="hover-scale">
-            <PriceBox
-              label="🛡️ Stoploss"
-              price={stoploss}
-              isLoss
-              isHit={exitReason === 'STOPLOSS_HIT'}
-            />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="hover-scale">
+              <PriceBox
+                label="🛡️ Stoploss"
+                price={stoploss}
+                isLoss
+                isHit={exitReason === 'STOPLOSS_HIT'}
+              />
+            </div>
+            <div className="rounded-lg px-3 py-2 border bg-secondary/50 border-border">
+              <p className="text-[10px] uppercase tracking-wider mb-0.5 text-muted-foreground flex items-center gap-1">
+                <Wallet className="h-3 w-3 text-primary" /> Allocation
+              </p>
+              <p className="font-mono-price text-sm font-semibold text-primary truncate">{allocation}</p>
+            </div>
           </div>
         </div>
       </div>
