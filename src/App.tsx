@@ -32,7 +32,7 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner position="top-center" theme="dark" />
-        <BrowserRouter basename="/stockpicker">
+        <BrowserRouter basename="/">
           <AdminPopupViewer />
           <AppDownloadBanner />
           <Routes>
