@@ -93,6 +93,9 @@ export function SwingRecommendationCard({
             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1">
               <Sparkles className="h-3 w-3" /> Swing
             </span>
+            <span className="md:hidden px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/15 text-primary border border-primary/30 flex items-center gap-1">
+              <Wallet className="h-3 w-3" /> {allocation}
+            </span>
             {isOpen && (
               <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-open/15 text-open border border-open/30">
                 <span className="relative flex h-1.5 w-1.5">
@@ -179,8 +182,8 @@ export function SwingRecommendationCard({
 
       {/* Price Section */}
       <div className="relative p-4 bg-secondary/20">
-        <div className="grid grid-cols-3 gap-2">
-          <div className="rounded-xl p-3 bg-background/40 border border-border/60 hover:border-primary/40 transition-colors">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          <div className="rounded-xl p-3 bg-background/40 border border-border/60 hover:border-primary/40 transition-colors min-w-0">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 flex items-center gap-1">
               {priceUp ? (
                 <TrendingUp className="h-3 w-3 text-profit" />
@@ -191,36 +194,36 @@ export function SwingRecommendationCard({
             </p>
             <p
               className={cn(
-                'font-mono-price text-lg font-bold',
+                'font-mono-price text-base md:text-lg font-bold truncate',
                 priceUp ? 'text-profit' : 'text-loss'
               )}
             >
               {formatCurrency(currentPrice)}
             </p>
           </div>
-          <div className="rounded-xl p-3 bg-background/40 border border-border/60 hover:border-primary/40 transition-colors">
+          <div className="rounded-xl p-3 bg-background/40 border border-border/60 hover:border-primary/40 transition-colors min-w-0">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 flex items-center gap-1">
               <Flame className="h-3 w-3 text-primary" /> Entry
             </p>
-            <p className="font-mono-price text-lg font-bold text-primary">
+            <p className="font-mono-price text-base md:text-lg font-bold text-primary truncate">
               {formatCurrency(recommendedPrice)}
             </p>
           </div>
-          <div className="rounded-xl p-3 bg-background/40 border border-border/60 hover:border-primary/40 transition-colors">
+          <div className="hidden md:block rounded-xl p-3 bg-background/40 border border-border/60 hover:border-primary/40 transition-colors min-w-0">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 flex items-center gap-1">
               <Wallet className="h-3 w-3 text-primary" /> Alloc
             </p>
-            <p className="text-lg font-bold text-foreground">{allocation}</p>
+            <p className="text-lg font-bold text-foreground truncate">{allocation}</p>
           </div>
         </div>
       </div>
 
-      {/* Targets Grid - 3 cols */}
+      {/* Targets Grid */}
       <div className="px-4 pt-4">
         <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2 flex items-center gap-1.5">
           <Target className="h-3.5 w-3.5 text-primary" /> Targets &amp; Risk
         </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="hidden md:grid md:grid-cols-3 gap-2">
           <div className="hover-scale">
             <PriceBox
               label="🎯 Target 1"
@@ -234,6 +237,32 @@ export function SwingRecommendationCard({
               price={target2}
               isHit={exitReason === 'TARGET_2_HIT'}
             />
+          </div>
+          <div className="hover-scale">
+            <PriceBox
+              label="🛡️ Stoploss"
+              price={stoploss}
+              isLoss
+              isHit={exitReason === 'STOPLOSS_HIT'}
+            />
+          </div>
+        </div>
+        <div className="md:hidden space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="hover-scale">
+              <PriceBox
+                label="🎯 Target 1"
+                price={target1}
+                isHit={exitReason === 'TARGET_1_HIT' || exitReason === 'TARGET_2_HIT'}
+              />
+            </div>
+            <div className="hover-scale">
+              <PriceBox
+                label="🎯 Target 2"
+                price={target2}
+                isHit={exitReason === 'TARGET_2_HIT'}
+              />
+            </div>
           </div>
           <div className="hover-scale">
             <PriceBox
