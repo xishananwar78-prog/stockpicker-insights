@@ -93,9 +93,6 @@ export function SwingRecommendationCard({
             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1">
               <Sparkles className="h-3 w-3" /> Swing
             </span>
-            <span className="md:hidden px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/15 text-primary border border-primary/30 flex items-center gap-1">
-              <Wallet className="h-3 w-3" /> {allocation}
-            </span>
             {isOpen && (
               <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-open/15 text-open border border-open/30">
                 <span className="relative flex h-1.5 w-1.5">
