@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, Loader2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,10 @@ export function StockTickerPicker({ stockName, value, price, error, onSelect }: 
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
 
+  useEffect(() => {
+    setQuery(stockName);
+  }, [stockName]);
+
   const searchStocks = async () => {
     const term = query.trim();
     if (term.length < 2) {
@@ -29,8 +33,9 @@ export function StockTickerPicker({ stockName, value, price, error, onSelect }: 
     setIsSearching(true);
     setSearchError('');
     try {
-      setResults(await searchYahooStocks(term));
-      if (!results.length) setSearchError('No Indian exchange matches found. Try another name.');
+      const matches = await searchYahooStocks(term);
+      setResults(matches);
+      if (!matches.length) setSearchError('No Indian exchange matches found. Try another name.');
     } catch (requestError) {
       setSearchError(requestError instanceof Error ? requestError.message : 'Search is unavailable.');
       setResults([]);
@@ -79,6 +84,7 @@ export function StockTickerPicker({ stockName, value, price, error, onSelect }: 
               className="h-auto w-full justify-start rounded-none px-3 py-2.5 text-left"
               onClick={() => {
                 onSelect(stock);
+                setQuery(stock.name);
                 setResults([]);
                 setSearchError('');
               }}

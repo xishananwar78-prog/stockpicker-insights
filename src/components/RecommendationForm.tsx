@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X } from 'lucide-react';
+import { StockTickerPicker } from '@/components/StockTickerPicker';
+import { fetchYahooQuotes, YahooStockResult } from '@/lib/yahooFinance';
 import { IntradayRecommendation, TradeSide } from '@/types/recommendation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +25,7 @@ import {
 
 const recommendationSchema = z.object({
   stockName: z.string().min(1, 'Stock name is required').max(50),
+  yahooSymbol: z.string().min(1, 'Choose a Yahoo stock listing'),
   currentPrice: z.number().positive('Current price must be positive'),
   tradeSide: z.enum(['BUY', 'SELL']),
   recommendedPrice: z.number().positive('Recommended price must be positive'),
@@ -50,18 +53,22 @@ export function RecommendationForm({
   mode = 'add',
 }: RecommendationFormProps) {
   const [tradeSide, setTradeSide] = useState<TradeSide>(initialData?.tradeSide || 'BUY');
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState('');
 
   const {
     register,
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(recommendationSchema),
     defaultValues: initialData
       ? {
           stockName: initialData.stockName,
+          yahooSymbol: initialData.yahooSymbol || '',
           currentPrice: initialData.currentPrice,
           tradeSide: initialData.tradeSide,
           recommendedPrice: initialData.recommendedPrice,
@@ -79,6 +86,7 @@ export function RecommendationForm({
     if (initialData) {
       reset({
         stockName: initialData.stockName,
+        yahooSymbol: initialData.yahooSymbol || '',
         currentPrice: initialData.currentPrice,
         tradeSide: initialData.tradeSide,
         recommendedPrice: initialData.recommendedPrice,
@@ -90,6 +98,7 @@ export function RecommendationForm({
       setTradeSide(initialData.tradeSide);
     } else {
       reset({
+        yahooSymbol: '',
         tradeSide: 'BUY',
       });
       setTradeSide('BUY');
@@ -99,6 +108,7 @@ export function RecommendationForm({
   const onFormSubmit = (data: FormData) => {
     onSubmit({
       stockName: data.stockName,
+      yahooSymbol: data.yahooSymbol,
       currentPrice: data.currentPrice,
       tradeSide,
       recommendedPrice: data.recommendedPrice,
@@ -109,6 +119,22 @@ export function RecommendationForm({
     });
     reset();
     onOpenChange(false);
+  };
+
+  const handleStockSelect = async (stock: YahooStockResult) => {
+    setValue('yahooSymbol', stock.symbol, { shouldValidate: true });
+    setQuoteLoading(true);
+    setQuoteError('');
+    try {
+      const prices = await fetchYahooQuotes([stock.symbol]);
+      const price = prices[stock.symbol];
+      if (!price) throw new Error('Yahoo has no quote for this listing right now.');
+      setValue('currentPrice', price, { shouldValidate: true, shouldDirty: true });
+    } catch (error) {
+      setQuoteError(error instanceof Error ? error.message : 'Could not load the latest price.');
+    } finally {
+      setQuoteLoading(false);
+    }
   };
 
   return (
@@ -134,6 +160,14 @@ export function RecommendationForm({
               <p className="text-xs text-loss">{errors.stockName.message}</p>
             )}
           </div>
+
+          <StockTickerPicker
+            stockName={watch('stockName') || ''}
+            value={watch('yahooSymbol')}
+            price={watch('currentPrice')}
+            error={quoteError || errors.yahooSymbol?.message}
+            onSelect={(stock) => void handleStockSelect(stock)}
+          />
 
           {/* Trade Side */}
           <div className="space-y-2">
@@ -175,8 +209,11 @@ export function RecommendationForm({
                 step="0.01"
                 placeholder="0.00"
                 className="bg-input border-border font-mono"
+                readOnly
+                aria-label="Current Yahoo price"
                 {...register('currentPrice', { valueAsNumber: true })}
               />
+              {quoteLoading && <p className="text-xs text-muted-foreground">Fetching Yahoo price…</p>}
               {errors.currentPrice && (
                 <p className="text-xs text-loss">{errors.currentPrice.message}</p>
               )}

@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { RecommendationCard } from '@/components/RecommendationCard';
 import { RecommendationForm } from '@/components/RecommendationForm';
-import { UpdatePriceDialog } from '@/components/UpdatePriceDialog';
 import { ExitRuleDialog } from '@/components/ExitRuleDialog';
 import { Button } from '@/components/ui/button';
 import { UpstoxBanner } from '@/components/UpstoxBanner';
@@ -12,7 +12,6 @@ import {
   useIntradayRecommendations,
   useUpdateIntradayRecommendation,
   useDeleteIntradayRecommendation,
-  useUpdateIntradayCurrentPrice,
   useExitIntradayRecommendation,
 } from '@/hooks/useIntradayRecommendations';
 import { calculateRecommendationStatus } from '@/lib/recommendationUtils';
@@ -31,16 +30,15 @@ import {
 export default function IntradayDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: recommendations = [], isLoading } = useIntradayRecommendations();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [updatePriceRec, setUpdatePriceRec] = useState<IntradayRecommendation | null>(null);
   const [exitRec, setExitRec] = useState<IntradayRecommendation | null>(null);
   const [showDelete, setShowDelete] = useState(false);
 
   const updateMutation = useUpdateIntradayRecommendation();
   const deleteMutation = useDeleteIntradayRecommendation();
-  const updatePriceMutation = useUpdateIntradayCurrentPrice();
   const exitMutation = useExitIntradayRecommendation();
 
   const rawRec = recommendations.find((r) => r.id === id);
@@ -85,11 +83,6 @@ export default function IntradayDetailPage() {
     setExitRec(null);
   };
 
-  const handlePriceUpdate = (price: number) => {
-    updatePriceMutation.mutate({ id: recommendation.id, price });
-    setUpdatePriceRec(null);
-  };
-
   return (
     <AdminLayout>
       <div className="p-4 md:p-6 space-y-4">
@@ -104,7 +97,7 @@ export default function IntradayDetailPage() {
           onEdit={() => setIsFormOpen(true)}
           onDelete={() => setShowDelete(true)}
           onExit={() => setExitRec(rawRec!)}
-          onUpdatePrice={() => setUpdatePriceRec(rawRec!)}
+          onUpdatePrice={() => void queryClient.invalidateQueries({ queryKey: ['intraday-recommendations'] })}
         />
       </div>
 
@@ -115,16 +108,6 @@ export default function IntradayDetailPage() {
         initialData={rawRec || undefined}
         mode="edit"
       />
-
-      {updatePriceRec && (
-        <UpdatePriceDialog
-          open={!!updatePriceRec}
-          onOpenChange={(open) => !open && setUpdatePriceRec(null)}
-          onSubmit={handlePriceUpdate}
-          stockName={updatePriceRec.stockName}
-          currentPrice={updatePriceRec.currentPrice}
-        />
-      )}
 
       {exitRec && (
         <ExitRuleDialog

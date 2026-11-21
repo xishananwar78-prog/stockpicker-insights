@@ -1,4 +1,5 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
   status,
@@ -6,13 +7,42 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 });
 
 const validSymbol = (value: unknown): value is string =>
-  typeof value === 'string' && /^[A-Z0-9.^=-]{1,32}\.(NS|BO)$/.test(value);
+  typeof value === 'string' && /^[A-Z0-9&.^=-]{1,32}\.(NS|BO)$/.test(value);
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
 
   try {
+    const authorization = req.headers.get('Authorization');
+    const token = authorization?.replace(/^Bearer\s+/i, '');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const publishableKey = Deno.env.get('SUPABASE_ANON_KEY') || Deno.env.get('SUPABASE_PUBLISHABLE_KEY');
+    if (!supabaseUrl || !publishableKey) {
+      console.error('Market data function is missing its authentication configuration', {
+        hasUrl: Boolean(supabaseUrl),
+        hasClientKey: Boolean(publishableKey),
+      });
+      return json({ error: 'Market data service is not configured' }, 500);
+    }
+    if (!token) return json({ error: 'Unauthorized' }, 401);
+
+    if (token !== publishableKey) {
+      const authClient = createClient(supabaseUrl, publishableKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
+      const role = claimsData?.claims?.role;
+      if (claimsError || role !== 'authenticated' || typeof claimsData?.claims?.sub !== 'string') {
+        console.error('Market data rejected an invalid caller token', {
+          message: claimsError?.message,
+          role,
+          tokenMatchesClientKey: token === publishableKey,
+        });
+        return json({ error: 'Unauthorized' }, 401);
+      }
+    }
+
     let body: unknown;
     try {
       body = await req.json();

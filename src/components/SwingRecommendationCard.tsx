@@ -132,7 +132,7 @@ export function SwingRecommendationCard({
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onUpdatePrice?.(id)}>
                     <RefreshCw className="mr-2 h-4 w-4" />
-                    Update Price
+                    Refresh Yahoo Price
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                 </>

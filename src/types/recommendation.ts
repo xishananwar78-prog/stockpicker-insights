@@ -15,6 +15,7 @@ export type ExitReason =
 export interface IntradayRecommendation {
   id: string;
   stockName: string;
+  yahooSymbol?: string;
   currentPrice: number;
   tradeSide: TradeSide;
   recommendedPrice: number;
@@ -33,6 +34,7 @@ export interface IntradayRecommendation {
 export interface SwingRecommendation {
   id: string;
   stockName: string;
+  yahooSymbol?: string;
   currentPrice: number;
   recommendedPrice: number; // Price at which to enter the trade
   imageUrl?: string; // Optional chart/analysis image

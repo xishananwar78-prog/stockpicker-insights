@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { StockTickerPicker } from '@/components/StockTickerPicker';
+import { fetchYahooQuotes, YahooStockResult } from '@/lib/yahooFinance';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +19,7 @@ import {
 
 const swingSchema = z.object({
   stockName: z.string().min(1, 'Stock name is required').max(50),
+  yahooSymbol: z.string().min(1, 'Choose a Yahoo stock listing'),
   currentPrice: z.number().positive('Current price must be positive'),
   recommendedPrice: z.number().positive('Recommended price must be positive'),
   imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
@@ -44,10 +47,13 @@ export function SwingRecommendationForm({
   initialData,
   mode = 'add',
 }: SwingRecommendationFormProps) {
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState('');
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
@@ -55,6 +61,7 @@ export function SwingRecommendationForm({
     defaultValues: initialData
       ? {
           stockName: initialData.stockName,
+          yahooSymbol: initialData.yahooSymbol || '',
           currentPrice: initialData.currentPrice,
           recommendedPrice: initialData.recommendedPrice,
           imageUrl: initialData.imageUrl || '',
@@ -75,6 +82,7 @@ export function SwingRecommendationForm({
     if (initialData) {
       reset({
         stockName: initialData.stockName,
+        yahooSymbol: initialData.yahooSymbol || '',
         currentPrice: initialData.currentPrice,
         recommendedPrice: initialData.recommendedPrice,
         imageUrl: initialData.imageUrl || '',
@@ -86,6 +94,7 @@ export function SwingRecommendationForm({
       });
     } else {
       reset({
+        yahooSymbol: '',
         allocation: '',
       });
     }
@@ -94,6 +103,7 @@ export function SwingRecommendationForm({
   const onFormSubmit = (data: FormData) => {
     onSubmit({
       stockName: data.stockName,
+      yahooSymbol: data.yahooSymbol,
       currentPrice: data.currentPrice,
       recommendedPrice: data.recommendedPrice,
       imageUrl: data.imageUrl || undefined,
@@ -105,6 +115,22 @@ export function SwingRecommendationForm({
     });
     reset();
     onOpenChange(false);
+  };
+
+  const handleStockSelect = async (stock: YahooStockResult) => {
+    setValue('yahooSymbol', stock.symbol, { shouldValidate: true });
+    setQuoteLoading(true);
+    setQuoteError('');
+    try {
+      const prices = await fetchYahooQuotes([stock.symbol]);
+      const price = prices[stock.symbol];
+      if (!price) throw new Error('Yahoo has no quote for this listing right now.');
+      setValue('currentPrice', price, { shouldValidate: true, shouldDirty: true });
+    } catch (error) {
+      setQuoteError(error instanceof Error ? error.message : 'Could not load the latest price.');
+    } finally {
+      setQuoteLoading(false);
+    }
   };
 
   return (
@@ -131,6 +157,14 @@ export function SwingRecommendationForm({
             )}
           </div>
 
+          <StockTickerPicker
+            stockName={watch('stockName') || ''}
+            value={watch('yahooSymbol')}
+            price={watch('currentPrice')}
+            error={quoteError || errors.yahooSymbol?.message}
+            onSelect={(stock) => void handleStockSelect(stock)}
+          />
+
           {/* Current Price */}
           <div className="space-y-2">
             <Label htmlFor="currentPrice">Current Price (₹)</Label>
@@ -140,8 +174,11 @@ export function SwingRecommendationForm({
               step="0.01"
               placeholder="0.00"
               className="bg-input border-border font-mono"
+              readOnly
+              aria-label="Current Yahoo price"
               {...register('currentPrice', { valueAsNumber: true })}
             />
+            {quoteLoading && <p className="text-xs text-muted-foreground">Fetching Yahoo price…</p>}
             {errors.currentPrice && (
               <p className="text-xs text-loss">{errors.currentPrice.message}</p>
             )}

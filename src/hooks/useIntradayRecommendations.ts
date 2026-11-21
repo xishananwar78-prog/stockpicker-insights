@@ -2,11 +2,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { IntradayRecommendation, ExitReason, TradeSide } from '@/types/recommendation';
 import { toast } from 'sonner';
+import { applyYahooPrices, fetchYahooQuotes } from '@/lib/yahooFinance';
 
 // Database row type (snake_case)
 interface IntradayRecommendationRow {
   id: string;
   stock_name: string;
+  yahoo_symbol: string | null;
   current_price: number;
   trade_side: 'BUY' | 'SELL';
   recommended_price: number;
@@ -26,6 +28,7 @@ function rowToRecommendation(row: IntradayRecommendationRow): IntradayRecommenda
   return {
     id: row.id,
     stockName: row.stock_name,
+    yahooSymbol: row.yahoo_symbol || undefined,
     currentPrice: Number(row.current_price),
     tradeSide: row.trade_side as TradeSide,
     recommendedPrice: Number(row.recommended_price),
@@ -56,8 +59,21 @@ export function useIntradayRecommendations() {
         throw error;
       }
 
-      return (data as IntradayRecommendationRow[]).map(rowToRecommendation);
+      const recommendations = (data as IntradayRecommendationRow[]).map(rowToRecommendation);
+      const openSymbols = recommendations
+        .filter((rec) => !rec.exitReason && rec.yahooSymbol)
+        .map((rec) => rec.yahooSymbol as string);
+      if (!openSymbols.length) return recommendations;
+
+      try {
+        return applyYahooPrices(recommendations, await fetchYahooQuotes(openSymbols));
+      } catch (quoteError) {
+        console.warn('Yahoo intraday prices unavailable; showing saved prices', quoteError);
+        return recommendations;
+      }
     },
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
   });
 }
 
@@ -71,6 +87,7 @@ export function useAddIntradayRecommendation() {
         .from('intraday_recommendations')
         .insert({
           stock_name: rec.stockName,
+          yahoo_symbol: rec.yahooSymbol || null,
           current_price: rec.currentPrice,
           trade_side: rec.tradeSide,
           recommended_price: rec.recommendedPrice,
@@ -105,6 +122,7 @@ export function useUpdateIntradayRecommendation() {
       const updateData: Record<string, unknown> = {};
       
       if (rec.stockName !== undefined) updateData.stock_name = rec.stockName;
+      if (rec.yahooSymbol !== undefined) updateData.yahoo_symbol = rec.yahooSymbol || null;
       if (rec.currentPrice !== undefined) updateData.current_price = rec.currentPrice;
       if (rec.tradeSide !== undefined) updateData.trade_side = rec.tradeSide;
       if (rec.recommendedPrice !== undefined) updateData.recommended_price = rec.recommendedPrice;
