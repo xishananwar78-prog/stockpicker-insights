@@ -168,12 +168,12 @@ export function SwingRecommendationCard({
           <img 
             src={imageUrl} 
             alt={`${stockName} chart`}
-            className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-auto object-contain"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
             }}
           />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+          
         </div>
       )}
 

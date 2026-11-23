@@ -183,7 +183,7 @@ export function SwingRecommendationForm({
                 <img 
                   src={imageUrl} 
                   alt="Chart preview" 
-                  className="w-full h-32 object-cover"
+                  className="w-full h-auto object-contain"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}
