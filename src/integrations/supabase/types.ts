@@ -344,6 +344,7 @@ export type Database = {
           allocation: string
           created_at: string
           current_price: number
+          entry_triggered: boolean
           exit_price: number | null
           exit_reason: Database["public"]["Enums"]["swing_exit_reason"] | null
           exited_at: string | null
@@ -362,6 +363,7 @@ export type Database = {
           allocation: string
           created_at?: string
           current_price: number
+          entry_triggered?: boolean
           exit_price?: number | null
           exit_reason?: Database["public"]["Enums"]["swing_exit_reason"] | null
           exited_at?: string | null
@@ -380,6 +382,7 @@ export type Database = {
           allocation?: string
           created_at?: string
           current_price?: number
+          entry_triggered?: boolean
           exit_price?: number | null
           exit_reason?: Database["public"]["Enums"]["swing_exit_reason"] | null
           exited_at?: string | null
