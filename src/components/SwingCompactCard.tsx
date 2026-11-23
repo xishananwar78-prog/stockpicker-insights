@@ -123,6 +123,7 @@ export function SwingCompactCard({ recommendation, isLocked = false }: SwingComp
           target1={recommendation.target1}
           target2={target2}
           isNotExecuted={isExited && exitReason === 'NOT_EXECUTED'}
+          isPendingEntry={recommendation.entryTriggered === false && !isExited}
         />
 
         {/* Footer: View Details */}

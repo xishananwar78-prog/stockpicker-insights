@@ -35,6 +35,7 @@ export interface SwingRecommendation {
   stockName: string;
   currentPrice: number;
   recommendedPrice: number; // Price at which to enter the trade
+  entryTriggered?: boolean; // True once CMP has reached the entry price after posting
   imageUrl?: string; // Optional chart/analysis image
   target1: number;
   target2: number;

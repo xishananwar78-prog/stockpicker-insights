@@ -7,6 +7,7 @@ interface SwingPriceBarProps {
   target1: number;
   target2?: number;
   isNotExecuted?: boolean;
+  isPendingEntry?: boolean;
 }
 
 export function SwingPriceBar({
@@ -16,6 +17,7 @@ export function SwingPriceBar({
   target1,
   target2,
   isNotExecuted = false,
+  isPendingEntry = false,
 }: SwingPriceBarProps) {
   const highest = target2 && target2 > target1 ? target2 : target1;
   const min = Math.min(stoploss, currentPrice) * 0.995;
@@ -36,7 +38,7 @@ export function SwingPriceBar({
   // Fill: strictly from entry to current price only
   const fillLeft = Math.min(entryPos, curPos);
   const fillRight = Math.max(entryPos, curPos);
-  const fillColor = atEntry ? 'primary' : priceAboveEntry ? 'profit' : 'loss';
+  const fillColor = isPendingEntry ? 'muted-foreground' : atEntry ? 'primary' : priceAboveEntry ? 'profit' : 'loss';
 
   const markers = [
     { pos: slPos, label: 'SL', color: 'loss' },
@@ -63,7 +65,7 @@ export function SwingPriceBar({
       {/* Track */}
       <div className="relative h-[10px] rounded-full overflow-hidden bg-muted/30">
         {/* Colored fill: entry → current only */}
-        {!isNotExecuted && !atEntry && (
+        {!isNotExecuted && !isPendingEntry && !atEntry && (
           <div
             className="absolute top-0 bottom-0 transition-all duration-500"
             style={{
@@ -78,7 +80,7 @@ export function SwingPriceBar({
         )}
 
         {/* Blue glow at entry when at entry */}
-        {!isNotExecuted && atEntry && (
+        {!isNotExecuted && !isPendingEntry && atEntry && (
           <div
             className="absolute top-0 bottom-0 w-3 -translate-x-1/2 rounded-full"
             style={{
@@ -116,6 +118,12 @@ export function SwingPriceBar({
           </div>
         )}
       </div>
+
+      {isPendingEntry && !isNotExecuted && (
+        <p className="text-center text-[10px] text-muted-foreground mt-1.5 font-medium tracking-widest uppercase">
+          ⏳ Awaiting Entry @ ₹{recommendedPrice}
+        </p>
+      )}
 
       {isNotExecuted && (
         <p className="text-center text-[10px] text-muted-foreground mt-1.5 font-medium tracking-widest uppercase">

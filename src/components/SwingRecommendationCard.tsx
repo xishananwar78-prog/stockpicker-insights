@@ -300,6 +300,7 @@ export function SwingRecommendationCard({
         target1={target1}
         target2={target2}
         isNotExecuted={status === 'EXIT' && exitReason === 'NOT_EXECUTED'}
+          isPendingEntry={recommendation.entryTriggered === false && status === 'OPEN'}
       />
 
       <div className="px-4 pb-4">

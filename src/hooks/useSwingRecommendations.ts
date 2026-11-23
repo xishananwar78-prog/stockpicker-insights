@@ -9,6 +9,7 @@ interface SwingRecommendationRow {
   stock_name: string;
   current_price: number;
   recommended_price: number;
+  entry_triggered?: boolean;
   image_url: string | null;
   target1: number;
   target2: number;
@@ -29,6 +30,7 @@ function rowToRecommendation(row: SwingRecommendationRow): SwingRecommendation {
     stockName: row.stock_name,
     currentPrice: Number(row.current_price),
     recommendedPrice: Number(row.recommended_price),
+    entryTriggered: row.entry_triggered ?? true,
     imageUrl: row.image_url || undefined,
     target1: Number(row.target1),
     target2: Number(row.target2),
