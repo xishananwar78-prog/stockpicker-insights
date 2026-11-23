@@ -2,13 +2,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SwingRecommendation, SwingExitReason } from '@/types/recommendation';
 import { toast } from 'sonner';
-import { applyYahooPrices, fetchYahooQuotes } from '@/lib/yahooFinance';
 
 // Database row type (snake_case)
 interface SwingRecommendationRow {
   id: string;
   stock_name: string;
-  yahoo_symbol: string | null;
   current_price: number;
   recommended_price: number;
   image_url: string | null;
@@ -29,7 +27,6 @@ function rowToRecommendation(row: SwingRecommendationRow): SwingRecommendation {
   return {
     id: row.id,
     stockName: row.stock_name,
-    yahooSymbol: row.yahoo_symbol || undefined,
     currentPrice: Number(row.current_price),
     recommendedPrice: Number(row.recommended_price),
     imageUrl: row.image_url || undefined,
@@ -61,21 +58,8 @@ export function useSwingRecommendations() {
         throw error;
       }
 
-      const recommendations = (data as SwingRecommendationRow[]).map(rowToRecommendation);
-      const openSymbols = recommendations
-        .filter((rec) => !rec.exitReason && rec.yahooSymbol)
-        .map((rec) => rec.yahooSymbol as string);
-      if (!openSymbols.length) return recommendations;
-
-      try {
-        return applyYahooPrices(recommendations, await fetchYahooQuotes(openSymbols));
-      } catch (quoteError) {
-        console.warn('Yahoo swing prices unavailable; showing saved prices', quoteError);
-        return recommendations;
-      }
+      return (data as SwingRecommendationRow[]).map(rowToRecommendation);
     },
-    refetchInterval: 60_000,
-    refetchIntervalInBackground: false,
   });
 }
 
@@ -89,7 +73,6 @@ export function useAddSwingRecommendation() {
         .from('swing_recommendations')
         .insert({
           stock_name: rec.stockName,
-          yahoo_symbol: rec.yahooSymbol || null,
           current_price: rec.currentPrice,
           recommended_price: rec.recommendedPrice,
           image_url: rec.imageUrl,
@@ -125,7 +108,6 @@ export function useUpdateSwingRecommendation() {
       const updateData: Record<string, unknown> = {};
       
       if (rec.stockName !== undefined) updateData.stock_name = rec.stockName;
-      if (rec.yahooSymbol !== undefined) updateData.yahoo_symbol = rec.yahooSymbol || null;
       if (rec.currentPrice !== undefined) updateData.current_price = rec.currentPrice;
       if (rec.recommendedPrice !== undefined) updateData.recommended_price = rec.recommendedPrice;
       if (rec.imageUrl !== undefined) updateData.image_url = rec.imageUrl;

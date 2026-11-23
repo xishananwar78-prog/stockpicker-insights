@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { SwingRecommendationCard } from '@/components/SwingRecommendationCard';
 import { SwingRecommendationForm } from '@/components/SwingRecommendationForm';
+import { UpdatePriceDialog } from '@/components/UpdatePriceDialog';
 import { SwingExitDialog } from '@/components/SwingExitDialog';
 import { Button } from '@/components/ui/button';
 import { UpstoxBanner } from '@/components/UpstoxBanner';
@@ -14,6 +14,7 @@ import {
   useSwingRecommendations,
   useUpdateSwingRecommendation,
   useDeleteSwingRecommendation,
+  useUpdateSwingCurrentPrice,
   useExitSwingRecommendation,
 } from '@/hooks/useSwingRecommendations';
 import { calculateSwingStatus } from '@/lib/swingUtils';
@@ -32,16 +33,17 @@ import {
 export default function SwingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { user } = useAuthContext();
   const { data: recommendations = [], isLoading } = useSwingRecommendations();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [updatePriceRec, setUpdatePriceRec] = useState<SwingRecommendation | null>(null);
   const [exitRec, setExitRec] = useState<SwingRecommendation | null>(null);
   const [showDelete, setShowDelete] = useState(false);
 
   const updateMutation = useUpdateSwingRecommendation();
   const deleteMutation = useDeleteSwingRecommendation();
+  const updatePriceMutation = useUpdateSwingCurrentPrice();
   const exitMutation = useExitSwingRecommendation();
 
   const rawRec = recommendations.find((r) => r.id === id);
@@ -87,6 +89,11 @@ export default function SwingDetailPage() {
     setExitRec(null);
   };
 
+  const handlePriceUpdate = (price: number) => {
+    updatePriceMutation.mutate({ id: recommendation.id, price });
+    setUpdatePriceRec(null);
+  };
+
   return (
     <AdminLayout>
       <div className="p-4 md:p-6 space-y-4">
@@ -106,7 +113,7 @@ export default function SwingDetailPage() {
               onEdit={() => setIsFormOpen(true)}
               onDelete={() => setShowDelete(true)}
               onExit={() => setExitRec(rawRec!)}
-              onUpdatePrice={() => void queryClient.invalidateQueries({ queryKey: ['swing-recommendations'] })}
+              onUpdatePrice={() => setUpdatePriceRec(rawRec!)}
             />
           </div>
         </div>
@@ -119,6 +126,16 @@ export default function SwingDetailPage() {
         initialData={rawRec || undefined}
         mode="edit"
       />
+
+      {updatePriceRec && (
+        <UpdatePriceDialog
+          open={!!updatePriceRec}
+          onOpenChange={(open) => !open && setUpdatePriceRec(null)}
+          onSubmit={handlePriceUpdate}
+          stockName={updatePriceRec.stockName}
+          currentPrice={updatePriceRec.currentPrice}
+        />
+      )}
 
       {exitRec && (
         <SwingExitDialog

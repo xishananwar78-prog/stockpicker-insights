@@ -96,7 +96,7 @@ export function RecommendationCard({
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onUpdatePrice?.(id)}>
                     <RefreshCw className="mr-2 h-4 w-4" />
-                    Refresh Yahoo Price
+                    Update Price
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                 </>
