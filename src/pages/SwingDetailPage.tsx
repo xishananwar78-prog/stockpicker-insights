@@ -105,7 +105,7 @@ export default function SwingDetailPage() {
 
         <div className="relative">
           {isLockedForGuest && (
-            <LockedOverlay message="✨ This is a live pick! Subscribe to unlock full details" />
+            <LockedOverlay message="Swing Trade is available only for subscriber. You can unlock it for free as well with small payment." />
           )}
           <div className={isLockedForGuest ? 'blur-md select-none pointer-events-none' : ''}>
             <SwingRecommendationCard
