@@ -9,6 +9,7 @@ export type ExitReason =
   | 'PARTIAL_PROFIT'
   | 'PARTIAL_LOSS'
   | 'STOPLOSS_HIT'
+  | 'TIME_EXIT'
   | 'NOT_EXECUTED'
   | null;
 
@@ -22,6 +23,7 @@ export interface IntradayRecommendation {
   target2: number;
   target3: number;
   stoploss: number;
+  entryTriggered?: boolean;
   createdAt: Date;
   updatedAt: Date;
   // Exit fields - set when admin closes the recommendation

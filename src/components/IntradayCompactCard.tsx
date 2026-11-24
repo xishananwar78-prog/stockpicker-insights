@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/recommendationUtils';
 import { StatusBadge } from './StatusBadge';
 import { TradeSideBadge } from './TradeSideBadge';
+import { IntradayPriceBar } from './IntradayPriceBar';
 
 interface IntradayCompactCardProps {
   recommendation: CalculatedRecommendation;
@@ -17,7 +18,10 @@ export function IntradayCompactCard({ recommendation }: IntradayCompactCardProps
     recommendedPrice,
     tradeSide,
     target3,
+    target1,
+    target2,
     stoploss,
+    entryTriggered,
     status,
     exitReason,
     exitPrice,
@@ -107,6 +111,18 @@ export function IntradayCompactCard({ recommendation }: IntradayCompactCardProps
               </div>
             </div>
           )}
+
+          <IntradayPriceBar
+            currentPrice={currentPrice}
+            recommendedPrice={entryPrice}
+            tradeSide={tradeSide}
+            target1={target1}
+            target2={target2}
+            target3={target3}
+            stoploss={stoploss}
+            entryTriggered={entryTriggered}
+            isNotExecuted={isExited && exitReason === 'NOT_EXECUTED'}
+          />
         </div>
 
         {/* Footer: View Details */}

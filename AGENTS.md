@@ -1,0 +1,1 @@
+Persist Intraday entry state and evaluate automatic exits in the scheduled price-sync function so trade rules run independently of open browser sessions.

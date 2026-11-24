@@ -6,6 +6,7 @@ import { formatCurrency, formatPercent, formatExitReason } from '@/lib/recommend
 import { StatusBadge } from './StatusBadge';
 import { TradeSideBadge } from './TradeSideBadge';
 import { PriceBox } from './PriceBox';
+import { IntradayPriceBar } from './IntradayPriceBar';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -43,6 +44,7 @@ export function RecommendationCard({
     target2,
     target3,
     stoploss,
+    entryTriggered,
     status,
     exitReason,
     exitPrice,
@@ -166,6 +168,20 @@ export function RecommendationCard({
           price={stoploss} 
           isLoss 
           isHit={exitReason === 'STOPLOSS_HIT'}
+        />
+      </div>
+
+      <div className="px-4 pb-2">
+        <IntradayPriceBar
+          currentPrice={currentPrice}
+          recommendedPrice={recommendedPrice}
+          tradeSide={tradeSide}
+          target1={target1}
+          target2={target2}
+          target3={target3}
+          stoploss={stoploss}
+          entryTriggered={entryTriggered}
+          isNotExecuted={status === 'EXIT' && exitReason === 'NOT_EXECUTED'}
         />
       </div>
 

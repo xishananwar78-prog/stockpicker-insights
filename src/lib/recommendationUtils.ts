@@ -51,16 +51,21 @@ export function calculateRecommendationStatus(
     
     switch (exitReason) {
       case 'TARGET_1_HIT':
-        profitLoss = quantity * (target1 - recommendedPrice) * multiplier;
+        profitLoss = quantity * ((exitPrice ?? target1) - recommendedPrice) * multiplier;
         break;
       case 'TARGET_2_HIT':
-        profitLoss = quantity * (target2 - recommendedPrice) * multiplier;
+        profitLoss = quantity * ((exitPrice ?? target2) - recommendedPrice) * multiplier;
         break;
       case 'TARGET_3_HIT':
-        profitLoss = quantity * (target3 - recommendedPrice) * multiplier;
+        profitLoss = quantity * ((exitPrice ?? target3) - recommendedPrice) * multiplier;
         break;
       case 'STOPLOSS_HIT':
-        profitLoss = quantity * (stoploss - recommendedPrice) * multiplier;
+        profitLoss = quantity * ((exitPrice ?? stoploss) - recommendedPrice) * multiplier;
+        break;
+      case 'TIME_EXIT':
+        if (exitPrice !== undefined) {
+          profitLoss = quantity * (exitPrice - recommendedPrice) * multiplier;
+        }
         break;
       case 'PARTIAL_PROFIT':
       case 'PARTIAL_LOSS':
@@ -105,6 +110,8 @@ export function formatExitReason(reason: ExitReason, exitPrice?: number): string
       return 'Target 3 Hit';
     case 'STOPLOSS_HIT':
       return 'Stoploss Hit';
+    case 'TIME_EXIT':
+      return 'Time Exit (3:15 PM)';
     case 'PARTIAL_PROFIT':
       return exitPrice ? `Partial Profit @ ₹${exitPrice}` : 'Partial Profit';
     case 'PARTIAL_LOSS':

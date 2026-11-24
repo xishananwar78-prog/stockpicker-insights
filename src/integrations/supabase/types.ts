@@ -153,6 +153,7 @@ export type Database = {
         Row: {
           created_at: string
           current_price: number
+          entry_triggered: boolean
           exit_price: number | null
           exit_reason:
             | Database["public"]["Enums"]["intraday_exit_reason"]
@@ -172,6 +173,7 @@ export type Database = {
         Insert: {
           created_at?: string
           current_price: number
+          entry_triggered?: boolean
           exit_price?: number | null
           exit_reason?:
             | Database["public"]["Enums"]["intraday_exit_reason"]
@@ -191,6 +193,7 @@ export type Database = {
         Update: {
           created_at?: string
           current_price?: number
+          entry_triggered?: boolean
           exit_price?: number | null
           exit_reason?:
             | Database["public"]["Enums"]["intraday_exit_reason"]
@@ -444,6 +447,7 @@ export type Database = {
         | "PARTIAL_LOSS"
         | "STOPLOSS_HIT"
         | "NOT_EXECUTED"
+        | "TIME_EXIT"
       swing_exit_reason:
         | "TARGET_1_HIT"
         | "TARGET_2_HIT"
@@ -588,6 +592,7 @@ export const Constants = {
         "PARTIAL_LOSS",
         "STOPLOSS_HIT",
         "NOT_EXECUTED",
+        "TIME_EXIT",
       ],
       swing_exit_reason: [
         "TARGET_1_HIT",

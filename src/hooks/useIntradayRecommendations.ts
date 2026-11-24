@@ -8,6 +8,7 @@ interface IntradayRecommendationRow {
   id: string;
   stock_name: string;
   current_price: number;
+  entry_triggered: boolean;
   trade_side: 'BUY' | 'SELL';
   recommended_price: number;
   target1: number;
@@ -27,6 +28,7 @@ function rowToRecommendation(row: IntradayRecommendationRow): IntradayRecommenda
     id: row.id,
     stockName: row.stock_name,
     currentPrice: Number(row.current_price),
+    entryTriggered: row.entry_triggered,
     tradeSide: row.trade_side as TradeSide,
     recommendedPrice: Number(row.recommended_price),
     target1: Number(row.target1),
@@ -58,6 +60,8 @@ export function useIntradayRecommendations() {
 
       return (data as IntradayRecommendationRow[]).map(rowToRecommendation);
     },
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
   });
 }
 

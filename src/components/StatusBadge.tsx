@@ -21,6 +21,9 @@ export function StatusBadge({ status, exitReason, exitPrice, className }: Status
         if (exitReason === 'NOT_EXECUTED') {
           return 'bg-muted text-muted-foreground border-border';
         }
+        if (exitReason === 'TIME_EXIT') {
+          return 'bg-primary/10 text-primary border-primary/30';
+        }
         return 'bg-profit-muted text-profit border-profit/30';
       default:
         return 'bg-muted text-muted-foreground border-border';
