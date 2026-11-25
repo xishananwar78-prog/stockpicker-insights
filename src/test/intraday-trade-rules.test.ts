@@ -4,6 +4,7 @@ import {
   resolveAutomaticIntradayExit,
   type IntradayTradeRules,
 } from '../../supabase/functions/sync-live-prices/intraday-trade-rules';
+import { calculateRecommendationStatus } from '../lib/recommendationUtils';
 
 const buyTrade: IntradayTradeRules = {
   tradeSide: 'BUY',
@@ -65,5 +66,26 @@ describe('Intraday entry and automatic exits', () => {
       reason: 'NOT_EXECUTED',
       exitPrice: null,
     });
+  });
+
+  it('calculates realized P&L from the actual automatic exit price', () => {
+    const result = calculateRecommendationStatus({
+      id: 'test-trade',
+      stockName: 'TEST',
+      currentPrice: 112,
+      tradeSide: 'BUY',
+      recommendedPrice: 100,
+      target1: 105,
+      target2: 110,
+      target3: 115,
+      stoploss: 95,
+      entryTriggered: true,
+      exitReason: 'TARGET_2_HIT',
+      exitPrice: 112,
+      createdAt: new Date('2026-11-24T09:00:00.000Z'),
+      updatedAt: new Date('2026-11-24T09:45:00.000Z'),
+    });
+
+    expect(result.profitLoss).toBe(12_000);
   });
 });
